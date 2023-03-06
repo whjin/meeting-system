@@ -1,5 +1,3 @@
-let room = localStorage.getItem("roomNo");
-
 // 存储图片base64
 let base64Img = [];
 // 图片编辑器
@@ -37,9 +35,9 @@ let repeatOffer = false;
 let repeatAnswer = false;
 
 // 登录律师端后对应的管理后台
-let manageId = localStorage.getItem("unitCode") || 0;
-let roomName = localStorage.getItem("roomName") || "";
-let organizeName = localStorage.getItem("organizeName") || "";
+let manageId = window.localStorage.getItem("unitCode") || 0;
+let roomName = window.localStorage.getItem("roomName") || "";
+let organizeName = window.localStorage.getItem("organizeName") || "";
 if (organizeName) {
   chatDialog.setTitle(organizeName);
 }
@@ -51,6 +49,9 @@ const PeerConnection =
   window.mozRTCPeerConnection ||
   window.webkitRTCPeerConnection;
 !PeerConnection && message.error("浏览器不支持WebRTC！");
+
+const pathName = window.location.pathname;
+const room = pathName.split("/")[2];
 
 let message = {
   roomId: room,
@@ -77,7 +78,7 @@ createRtcConnect();
 load();
 
 // 开始录屏
-screen("start");
+screen();
 
 function createRtcConnect() {
   peer = new PeerConnection(iceServersConfig);
@@ -209,9 +210,10 @@ socket.on("connect", () => {
    * msgInfo内容与sendMessage发送的内容相同
    */
   socket.on("sendToLawyer", (res) => {
-    if (res.roomId == message.roomId) {
+    const msgInfo = JSON.parse(res);
+    if (msgInfo.roomId == message.roomId) {
       chatDialog.showChatDialog();
-      chatDialog.addAdverseMessage(res.messageInfo);
+      chatDialog.addAdverseMessage(msgInfo.messageInfo);
     }
   });
 
@@ -290,7 +292,7 @@ function deleteAndAddImg(idx = -1) {
                         </div>`;
     node.insertAdjacentHTML("beforeend", string);
   }
-  if (idx == -1) {
+  if (idx === -1) {
     /*重新遍历后选择照片为空*/
     highPhotoIdx = -1;
   }
@@ -346,7 +348,7 @@ function chooseBigPhoto(el, move = true) {
             highPhotoIdx = i;
             highPhoto = elementStyle[i].children[0].children[0];
             break;
-          } else if (i == base64Img.length - 1) {
+          } else if (i === base64Img.length - 1) {
             deleteAndAddImg(highPhotoIdx);
             elementStyle[highPhotoIdx].style.border = "1px solid #4EA5CC";
             break;
@@ -366,19 +368,23 @@ function chooseBigPhoto(el, move = true) {
 }
 /*推送*/
 document.getElementById("sendPhoto").onclick = function (ev) {
-  if (highPhotoIdx == -1) {
+  if (highPhotoIdx === -1) {
+    // alert('未选择图片');
     notice("未选择文件!", "error");
   } else {
-    socket.emit("sendPhoto", {
-      roomId: message.roomId,
-      content: base64Img[highPhotoIdx],
-    });
+    socket.emit(
+      "sendPhoto",
+      JSON.stringify({
+        roomId: message.roomId,
+        content: base64Img[highPhotoIdx],
+      })
+    );
     notice("推送成功!", "success");
   }
 };
 /*编辑*/
 document.getElementsByClassName("editThisPhoto")[0].onclick = function (ev) {
-  if (highPhotoIdx == -1) {
+  if (highPhotoIdx === -1) {
     notice("未选择文件！", "error");
   } else {
     showBigPhoto(highPhoto);
@@ -386,7 +392,7 @@ document.getElementsByClassName("editThisPhoto")[0].onclick = function (ev) {
 };
 /*删除*/
 document.getElementsByClassName("deleteThisPhoto")[0].onclick = function (ev) {
-  if (highPhotoIdx == -1) {
+  if (highPhotoIdx === -1) {
     notice("未选择文件！", "error");
   } else {
     document.getElementsByClassName("mian_bg3")[0].style.display = "block";
@@ -421,19 +427,16 @@ function sendMessage(msg, msgType, hideTips, cb) {
   $.ajax({
     type: "post",
     url: socketUrl + ":8100/sysmgr/meetTalk/saveMessage",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     data: JSON.stringify({
       message: msg,
-      code: localStorage.getItem("url") || 0,
+      code: window.localStorage.getItem("code") || 0,
       messageType: msgType,
     }),
     async: true,
     dataType: "json",
     contentType: "application/json",
     success: function (res) {
-      if (res.state.code == 200) {
+      if (res.state.code === 200) {
         cb && cb(res);
       } else {
         if (!hideTips) {
@@ -479,9 +482,6 @@ function faceAuth(base64) {
   $.ajax({
     type: "post",
     url: faceAuthUrl + ":20520/arc/face/faceRecognition",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     data: JSON.stringify({
       imgBase64: base64,
     }),
@@ -492,12 +492,15 @@ function faceAuth(base64) {
       if (res.state.code == 200) {
         if (res.data == "有陌生人进入") {
           sendMessage("人脸异常", 1, true, () => {
-            socket.emit("sendMessage", {
-              messageInfo: {
-                roleType: 0,
-              },
-              manageId,
-            });
+            socket.emit(
+              "sendMessage",
+              JSON.stringify({
+                messageInfo: {
+                  roleType: 0,
+                },
+                manageId,
+              })
+            );
           });
           // $(".error-mask").show();
         } else {
@@ -519,26 +522,29 @@ $("#chat-dialog .send-btn").click(function () {
   chatDialog.addMineMessage(msg);
   chatDialog.emptyInpVal();
   sendMessage(msg, 2, false, function (res) {
-    socket.emit("sendMessage", {
-      messageInfo: {
-        roleType: 0,
-        roleName: "律师端",
-        message: msg,
-        time: res.data.saveTime,
-        noticeId: res.data.id,
-      },
-      roomId: message.roomId,
-      manageId,
-    });
+    socket.emit(
+      "sendMessage",
+      JSON.stringify({
+        messageInfo: {
+          roleType: 0,
+          roleName: "律师端",
+          message: msg,
+          time: res.data.saveTime,
+          noticeId: res.data.id,
+        },
+        roomId: message.roomId,
+        manageId,
+      })
+    );
   });
 });
 
 /* 人脸识别 */
-if (loginVerification == 1) {
+if (loginVerification === 1) {
   let view = document.getElementById("view");
-  let lawyerLogin = document.getElementById("lawyerLogin");
+  let login = document.getElementById("login");
   view.style.display = "none";
-  lawyerLogin.style.display = "block";
+  login.style.display = "block";
   let roomId = document.getElementById("roomId");
   let name = document.getElementById("name");
   let idCard = document.getElementById("idCard");
@@ -547,19 +553,16 @@ if (loginVerification == 1) {
     $.ajax({
       type: "post",
       url: socketUrl + ":8100/sysmgr/meetVideoMessage/queryMeetPersonInfo",
-      headers: {
-        "X-Access-Token": Cookies.get("token"),
-      },
       async: true,
       contentType: "application/json",
       dataType: "json",
       data: '{"room":"' + room + '"}',
-      success: function (res) {
-        if (res.state.code == 200) {
+      success: function (str) {
+        if (str.state.code === 200) {
           message = {
             roomId: room,
-            name: res.data.lawyerName,
-            idCard: res.data.lawyerUnit,
+            name: str.data.lawyerName,
+            idCard: str.data.lawyerUnit,
           };
           /*填入信息*/
           roomId.innerHTML = message.roomId;
@@ -586,8 +589,8 @@ if (loginVerification == 1) {
   socket.on("receiveNewMessage", function (res) {
     message = {
       roomId: room,
-      name: res.data.lawyerName,
-      idCard: res.data.lawyerUnit,
+      name: JSON.parse(res).data.lawyerName,
+      idCard: JSON.parse(res).data.lawyerUnit,
     };
     /*填入信息*/
     roomId.innerHTML = message.roomId;
@@ -634,21 +637,18 @@ if (loginVerification == 1) {
           $.ajax({
             type: "post",
             url: socketUrl + ":8100/sysmgr/meetVideoMessage/faceRecognition",
-            headers: {
-              "X-Access-Token": Cookies.get("token"),
-            },
             async: true,
             contentType: false,
             processData: false,
             data: formData,
-            success: function (res) {
-              if (res.data !== "False") {
+            success: function (str) {
+              if (str.data !== "False") {
                 notice("识别成功", "success");
                 meetVideoMessage(message.roomId, 0, 1);
                 spin.style.display = "none";
                 spin2.style.display = "none";
                 document.getElementById("view").style.display = "block";
-                document.getElementById("lawyerLogin").style.display = "none";
+                document.getElementById("login").style.display = "none";
               } else {
                 flag = true;
               }
@@ -662,87 +662,83 @@ if (loginVerification == 1) {
 
 /*在押人员视频*/
 let bigVideo1 = document.getElementsByClassName("bigVideo")[0];
-
 /*音量控制*/
-// let voice1 = document.getElementsByClassName("voice")[0];
-// let volumeBox1 = document.getElementsByClassName("volumeBox")[0];
-// let volumeBar1 = document.getElementsByClassName("volumeBar")[0];
-// let volume1 = document.getElementsByClassName("volume")[0];
-// bigVideo1.volume = 1;
-// volume1.style.height = "100px";
-// voice1.onclick = () => {
-//   clickVoice(bigVideo1, voice1);
-// };
-// voice1.onmouseover = () => {
-//   volumeBox1.style.display = "block";
-// };
-// volumeBox1.onmouseover = () => {
-//   volumeBox1.style.display = "block";
-// };
-// voice1.onmouseout = () => {
-//   volumeBox1.style.display = "none";
-// };
-// volumeBox1.onmouseout = () => {
-//   volumeBox1.style.display = "none";
-// };
-// volumeBar1.onmousedown = (ev) => {
-//   changeVoice(ev, bigVideo1, voice1, volume1, volumeBar1);
-// };
-
+let voice1 = document.getElementsByClassName("voice")[0];
+let volumeBox1 = document.getElementsByClassName("volumeBox")[0];
+/*初始音量*/
+let volumeBar1 = document.getElementsByClassName("volumeBar")[0];
+let volume1 = document.getElementsByClassName("volume")[0];
+bigVideo1.volume = 1;
+volume1.style.height = "100px";
+voice1.onclick = () => {
+  clickVoice(bigVideo1, voice1);
+};
+voice1.onmouseover = () => {
+  volumeBox1.style.display = "block";
+};
+volumeBox1.onmouseover = () => {
+  volumeBox1.style.display = "block";
+};
+voice1.onmouseout = () => {
+  volumeBox1.style.display = "none";
+};
+volumeBox1.onmouseout = () => {
+  volumeBox1.style.display = "none";
+};
+volumeBar1.onmousedown = (ev) => {
+  changeVoice(ev, bigVideo1, voice1, volume1, volumeBar1);
+};
 /*律师视频*/
 let bigVideo2 = document.getElementsByClassName("bigVideo")[1];
-// 初始音量
-// bigVideo2.volume = 0;
+/*初始音量*/
+bigVideo2.volume = 0;
 
 // 律师视频tab页
 let layerTab = document.getElementsByClassName("layerTab")[0];
 let layerVideoBox = document.getElementsByClassName("layerVideoBox")[0];
 let layerTitle = document.getElementsByClassName("layerTitle")[0];
-let meetingType = localStorage.getItem("meetingType");
-if (meetingType == 0) {
-  layerTab.onclick = (ev) => {
-    if (ev.target.tagName == "LI") {
-      // 清空
-      for (let i = 0; i < layerTab.children.length; i++) {
-        layerTab.children[i].className = "";
-        layerVideoBox.children[i + 2].style.display = "none";
-      }
-      ev.target.className = "layerAct";
-      layerVideoBox.children[Number(ev.target.dataset.idx) + 1].style.display =
-        "block";
-      if (ev.target.dataset.idx == "1") {
-        bigVideo2.className = "bigVideo";
-        socket.emit("sendVideo", {
+layerTab.onclick = (ev) => {
+  if (ev.target.tagName === "LI") {
+    // 清空
+    for (let i = 0; i < layerTab.children.length; i++) {
+      layerTab.children[i].className = "";
+      layerVideoBox.children[i + 2].style.display = "none";
+    }
+    ev.target.className = "layerAct";
+    layerVideoBox.children[Number(ev.target.dataset.idx) + 1].style.display =
+      "block";
+    if (ev.target.dataset.idx === "1") {
+      bigVideo2.className = "bigVideo";
+      socket.emit(
+        "sendVideo",
+        JSON.stringify({
           roomId: message.roomId,
           status: 1,
-        });
-      } else {
-        bigVideo2.className = "bigVideo prisonVideo";
-        SetRotationStyle(1);
-      }
-      layerTitle.innerHTML =
-        (ev.target.innerText == "切回视频" ? "律师视频" : ev.target.innerText) +
-        '<span id="screenCopy" class="startLive" onclick="screen()" style="float: none;display: none;">开始录屏</span>' +
-        '<span class="startLive" onclick="downloaderScreenCopyFiles()" style="float: none;display: none;">开始刻录</span>' +
-        '<span id="hangUp">挂断</span>';
-      document.getElementById("hangUp").addEventListener(
-        "click",
-        function () {
-          document.getElementsByClassName("mian_bg2")[0].style.display =
-            "block";
-        },
-        false
+        })
       );
-
-      if (hangupSwitch) {
-        document.getElementById("hangUp").style.display = "block";
-      } else {
-        document.getElementById("hangUp").style.display = "none";
-      }
+    } else {
+      bigVideo2.className = "bigVideo prisonVideo";
+      SetRotationStyle(1);
     }
-  };
-}
-
+    layerTitle.innerHTML =
+      (ev.target.innerText === "切回视频" ? "律师视频" : ev.target.innerText) +
+      '<span id="screenCopy" class="startLive" onclick="screen()" style="float: none;display: none;">开始录屏</span>' +
+      '<span class="startLive" onclick="downloaderScreenCopyFiles()" style="float: none;display: none;">开始刻录</span>' +
+      '<span id="hangUp">挂断</span>';
+    document.getElementById("hangUp").addEventListener(
+      "click",
+      function () {
+        document.getElementsByClassName("mian_bg2")[0].style.display = "block";
+      },
+      false
+    );
+    if (hangupSwitch) {
+      document.getElementById("hangUp").style.display = "block";
+    } else {
+      document.getElementById("hangUp").style.display = "none";
+    }
+  }
+};
 /*编辑器*/
 window.um = UM.getEditor("editor", {
   lang: /^zh/.test(
@@ -765,19 +761,16 @@ window.um = UM.getEditor("editor", {
 let templateArr = [];
 let currentIndex = 0;
 let lastIndex = 0;
-let id = localStorage.getItem("appointmentId");
+let id = window.localStorage.getItem("appointmentId");
 // 获取笔录模板
 $.ajax({
   type: "post",
   url: socketUrl + ":8100/sysmgr/meetRoomInfo/getTranscriptTemp",
-  headers: {
-    "X-Access-Token": Cookies.get("token"),
-  },
   data: '{"id":"' + id + '", "currency": true}',
   dataType: "json",
   contentType: "application/json",
   success: function (res) {
-    if (res.state.code == 200) {
+    if (res.state.code === 200) {
       templateArr = res.data;
       templateArr.map((item) => {
         // 添加是否为默认模板的标志位
@@ -888,11 +881,14 @@ let scrollPercentage = 0; // 滚动距离百分比，内容较长时，在押端
 eduiEditorBody.onscroll = function () {
   scrollNow = eduiEditorBody.scrollTop;
   scrollPercentage = scrollNow / scrollHeight;
-  socket.emit("sendScroll", {
-    roomId: message.roomId,
-    scroll: eduiEditorBody.scrollTop,
-    scrollPercentage,
-  });
+  socket.emit(
+    "sendScroll",
+    JSON.stringify({
+      roomId: message.roomId,
+      scroll: eduiEditorBody.scrollTop,
+      scrollPercentage,
+    })
+  );
 };
 
 document.getElementById("sendNote").addEventListener(
@@ -900,12 +896,15 @@ document.getElementById("sendNote").addEventListener(
   function () {
     scrollHeight = eduiEditorBody.scrollHeight;
     scrollPercentage = scrollNow / scrollHeight;
-    socket.emit("sendNote", {
-      roomId: message.roomId,
-      content: um.getContent(),
-      scroll: scrollNow,
-      scrollPercentage,
-    });
+    socket.emit(
+      "sendNote",
+      JSON.stringify({
+        roomId: message.roomId,
+        content: um.getContent(),
+        scroll: scrollNow,
+        scrollPercentage,
+      })
+    );
     isSendNote = true;
     notice("推送成功", "success");
   },
@@ -925,37 +924,22 @@ document.getElementById("confirmHandUp").onclick = hangUp;
 
 function hangUp() {
   // 结束录屏
-  screen("end");
-  let code = localStorage.getItem("url");
-  socket.emit("sendQuit", {
-    roomId: message.roomId,
-    status: "logOut",
-    code: message.roomId,
-  });
+  screen();
+  let code = window.localStorage.getItem("code");
+  let lawyerRoom = window.localStorage.getItem("lawyerRoom");
+  socket.emit(
+    "sendQuit",
+    JSON.stringify({
+      roomId: message.roomId,
+      status: "logOut",
+      code,
+    })
+  );
   templateArr = [];
-  meetVideoMessage(code, 0, 0, code);
-  let meetingType = localStorage.getItem("meetingType");
-  switch (meetingType) {
-    case "0":
-      // 律师会见
-      location.href = socketUrl + ":3000/login";
-      break;
-    case "1":
-      // 家属会见
-      location.href = socketUrl + ":3000/familyLogin";
-      break;
-  }
-  // 清理登录缓存
-  let storage = JSON.parse(JSON.stringify(localStorage));
-  if (Object.keys(storage).length) {
-    Object.keys(storage).forEach((key) => {
-      if (key != "roomNo" && key != "meetingType") {
-        localStorage.removeItem(key);
-      }
-    });
-  }
+  meetVideoMessage(lawyerRoom, 0, 0, code);
+  lawyerTimeing.reset();
+  location.href = socketUrl + ":3000/login";
 }
-
 let editor = document.getElementById("editor");
 let x = 0;
 let y = 0;
@@ -991,7 +975,7 @@ function move(el) {
     imgg[i].style.border = "2px solid transparent";
     let next = imgg[i].nextElementSibling;
     next.style.display = "none";
-    if (imgg[i] == el) {
+    if (imgg[i] === el) {
       noteSignImg = i;
       el.style.border = "2px solid red";
       el.nextElementSibling.style.display = "block";
@@ -1009,7 +993,7 @@ function remove(el) {
 function fuzhi(el) {
   let editor = document.getElementById("editor");
   let ppCanvas = document.getElementsByClassName("ppCanvas");
-  if (ppCanvas.length == 0) {
+  if (ppCanvas.length === 0) {
     editor.insertAdjacentHTML(
       "afterbegin",
       '<p id="ppCanvasBox" style="margin:0;position:relative;"></p>'

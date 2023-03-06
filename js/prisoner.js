@@ -1,4 +1,5 @@
-let room = location.pathname.split("/")[2];
+const pathName = window.location.pathname;
+const room = pathName.split("/")[2];
 
 //切换页面
 let prisonerVideo = document.getElementsByClassName("prisonerVideo")[0];
@@ -47,9 +48,13 @@ function createRtcConnect() {
 
   peer.ontrack = (e) => {
     if (e && e.streams) {
+      if (!remoteVideo.srcObject) {
+        countdownSwitch && prisonerTimeing && prisonerTimeing.start();
+      }
       remoteVideo.srcObject = e.streams[0];
       localStream = e.streams[0];
-      countdownSwitch && prisonerTimeing && prisonerTimeing.start();
+    } else {
+      countdownSwitch && prisonerTimeing && prisonerTimeing.reset();
     }
   };
 
@@ -113,22 +118,6 @@ function createAnswer(offer) {
 socket.on("connect", () => {
   startLive();
 
-  socket.emit("joinRoom", {
-    room,
-    port: location.port,
-  });
-
-  socket.on("setRemotePort", (port) => {
-    location.port = port;
-  });
-
-  // 三合一 0-律师会见 1-家属会见
-  socket.on("getMeetingType", (type) => {
-    localStorage.setItem("meetingType", type);
-    handleMeetingType();
-    setPrisonerTitle();
-  });
-
   if (!offerState) {
     socket.emit("create_or_join", {
       role: message.role,
@@ -183,89 +172,61 @@ socket.on("connect", () => {
   });
 
   socket.on("startScreen", function (code) {
-    askVideotape("start");
+    askVideotape("start", "PrisonerMeeting", code);
   });
 
   socket.on("endScreen", function (code) {
-    askVideotape("end");
+    askVideotape("end", "", code);
   });
 
   // 获取笔录
-  socket.on("receiveNote", (res) => {
+  socket.on("receiveNote", function (res) {
     prisonerVideo.style.display = "none";
     signBox.style.display = "inline-block";
     scanBox.style.display = "none";
     bigVideo2.className = "bigVideo prisonVideo";
-    um.setContent(res.content);
+    um.setContent(JSON.parse(res).content);
     let eduiEditorBody = document.getElementsByClassName("edui-editor-body")[0];
     eduiEditorBody.scrollTop = Math.round(
-      eduiEditorBody.scrollHeight * res.scrollPercentage
+      eduiEditorBody.scrollHeight * JSON.parse(res).scrollPercentage
     );
   });
   // 获取Base64图片
-  socket.on("receivePhoto", (res) => {
+  socket.on("receivePhoto", function (res) {
     prisonerVideo.style.display = "none";
     signBox.style.display = "none";
     scanBox.style.display = "inline-block";
     bigVideo2.className = "bigVideo prisonVideo";
     let highMeterPhoto = document.getElementById("highMeterPhoto");
-    highMeterPhoto.src = res.content;
+    highMeterPhoto.src = JSON.parse(res).content;
   });
   // 退出
-  socket.on("receiveQuit", (res) => {
-    prisonerVideo.style.display = "inline-block";
-    signBox.style.display = "none";
-    scanBox.style.display = "none";
-    bigVideo2.className = "bigVideo";
-    countdownSwitch && prisonerTimeing && prisonerTimeing.reset();
-  });
-  // 切回视频
-  socket.on("receiveVideo", (res) => {
-    prisonerVideo.style.display = "inline-block";
-    signBox.style.display = "none";
-    scanBox.style.display = "none";
-    bigVideo2.className = "bigVideo";
+  socket.on("receiveQuit", function (res) {
+    let r = JSON.parse(res);
+    meetVideoMessage(message.roomId, 1, 0, r.code);
+    location.reload();
   });
   // 滚动
-  socket.on("receiveScroll", (res) => {
+  socket.on("receiveScroll", function (res) {
     let eduiEditorBody = document.getElementsByClassName("edui-editor-body")[0];
     eduiEditorBody.scrollTop = Math.round(
-      eduiEditorBody.scrollHeight * res.scrollPercentage
+      eduiEditorBody.scrollHeight * JSON.parse(res).scrollPercentage
     );
+  });
+  // 切回视频
+  socket.on("receiveVideo", function (res) {
+    prisonerVideo.style.display = "inline-block";
+    signBox.style.display = "none";
+    scanBox.style.display = "none";
+    bigVideo2.className = "bigVideo";
   });
 });
 
-function handleMeetingType() {
-  let title = document.querySelector("title");
-  let prisonerTitle = document.querySelector(".prisonerTitle");
-  let meetingType = localStorage.getItem("meetingType");
-  if (meetingType == 0) {
-    title.innerText = "律师会见系统";
-    prisonerTitle.innerText = "律师视频";
-  }
-  if (meetingType == 1) {
-    title.innerText = "家属会见系统";
-    prisonerTitle.innerText = "家属视频";
-  }
-}
-
-function setPrisonerTitle() {
-  let iframe = document.getElementById("iframeTime").contentWindow;
-  let title = iframe.document.querySelector(".title");
-  let meetingType = localStorage.getItem("meetingType");
-  if (meetingType == 0) {
-    title.innerText = "律师远程会见系统";
-  }
-  if (meetingType == 1) {
-    title.innerText = "家属远程会见系统";
-  }
-}
-
-if (loginVerification == 1) {
+if (loginVerification === 1) {
   let view = document.getElementById("view");
-  let prisonerLogin = document.getElementById("prisonerLogin");
+  let login = document.getElementById("login");
   view.style.display = "none";
-  prisonerLogin.style.display = "block";
+  login.style.display = "block";
   let roomId = document.getElementById("roomId");
   let name = document.getElementById("name");
   let idCard = document.getElementById("idCard");
@@ -274,15 +235,12 @@ if (loginVerification == 1) {
     $.ajax({
       type: "post",
       url: socketUrl + ":8100/sysmgr/meetVideoMessage/queryMeetPersonInfo",
-      headers: {
-        "X-Access-Token": Cookies.get("token"),
-      },
       async: true,
       contentType: "application/json",
       dataType: "json",
       data: '{"room":"' + room + '"}',
       success: function (str) {
-        if (str.state.code == 200) {
+        if (str.state.code === 200) {
           message = {
             roomId: room,
             name: str.data.prisonerName,
@@ -316,8 +274,8 @@ if (loginVerification == 1) {
   socket.on("receiveNewMessage", function (res) {
     message = {
       roomId: room,
-      name: res.data.prisonerName,
-      idCard: res.data.prisonerRoom,
+      name: JSON.parse(res).data.prisonerName,
+      idCard: JSON.parse(res).data.prisonerRoom,
     };
     /*填入信息*/
     roomId.innerHTML = message.roomId;
@@ -366,9 +324,6 @@ if (loginVerification == 1) {
             url:
               socketUrl +
               ":8100/sysmgr/meetVideoMessage/prisonerFaceRecognition",
-            headers: {
-              "X-Access-Token": Cookies.get("token"),
-            },
             async: true,
             contentType: false,
             processData: false,
@@ -380,7 +335,7 @@ if (loginVerification == 1) {
                 spin.style.display = "none";
                 spin2.style.display = "none";
                 document.getElementById("view").style.display = "block";
-                document.getElementById("prisonerLogin").style.display = "none";
+                document.getElementById("login").style.display = "none";
               } else {
                 flag = true;
               }
@@ -394,38 +349,36 @@ if (loginVerification == 1) {
 
 /*律师视频*/
 let bigVideo1 = document.getElementsByClassName("bigVideo")[0];
-
 /*音量控制*/
-// let voice1 = document.getElementsByClassName("voice")[0];
-// let volumeBox1 = document.getElementsByClassName("volumeBox")[0];
-// let volumeBar1 = document.getElementsByClassName("volumeBar")[0];
-// let volume1 = document.getElementsByClassName("volume")[0];
-// bigVideo1.volume = 1;
-// volume1.style.height = "100px";
-// voice1.onclick = () => {
-//   clickVoice(bigVideo1, voice1);
-// };
-// voice1.onmouseover = () => {
-//   volumeBox1.style.display = "block";
-// };
-// volumeBox1.onmouseover = () => {
-//   volumeBox1.style.display = "block";
-// };
-// voice1.onmouseout = () => {
-//   volumeBox1.style.display = "none";
-// };
-// volumeBox1.onmouseout = () => {
-//   volumeBox1.style.display = "none";
-// };
-// volumeBar1.onmousedown = (ev) => {
-//   changeVoice(ev, bigVideo1, voice1, volume1, volumeBar1);
-// };
+let voice1 = document.getElementsByClassName("voice")[0];
+let volumeBox1 = document.getElementsByClassName("volumeBox")[0];
+/*初始音量*/
+let volumeBar1 = document.getElementsByClassName("volumeBar")[0];
+let volume1 = document.getElementsByClassName("volume")[0];
+bigVideo1.volume = 1;
+volume1.style.height = "100px";
+voice1.onclick = () => {
+  clickVoice(bigVideo1, voice1);
+};
+voice1.onmouseover = () => {
+  volumeBox1.style.display = "block";
+};
+volumeBox1.onmouseover = () => {
+  volumeBox1.style.display = "block";
+};
+voice1.onmouseout = () => {
+  volumeBox1.style.display = "none";
+};
+volumeBox1.onmouseout = () => {
+  volumeBox1.style.display = "none";
+};
+volumeBar1.onmousedown = (ev) => {
+  changeVoice(ev, bigVideo1, voice1, volume1, volumeBar1);
+};
 
 /*在押人员视频*/
 let bigVideo2 = document.getElementsByClassName("bigVideo")[1];
-// 初始音量
-// bigVideo2.volume = 0;
-
+bigVideo2.volume = 0;
 /*编辑器*/
 const um = UM.getEditor("editor", {
   initialStyle: ".edui-editor-body .edui-body-container p{margin:16px 0;}",
@@ -437,7 +390,7 @@ function disableBtn(str) {
   let div = document.getElementById("editor");
   let btns = UM.dom.domUtils.getElementsByTagName(div, "button");
   for (let i = 0, btn; (btn = btns[i++]); ) {
-    if (btn.id == str) {
+    if (btn.id === str) {
       UM.dom.domUtils.removeAttributes(btn, ["disabled"]);
     } else {
       $(btn).attr("disabled", true).addClass("disabled");

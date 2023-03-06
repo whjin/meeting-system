@@ -7,10 +7,10 @@
 
 var apiUrl = "";
 try {
-  let ip = localStorage.getItem("remoteIp");
+  let ip = window.localStorage.getItem("remoteIp");
   apiUrl = "http://" + ip + ":8089/PPSignSDK/";
 } catch (e) {
-  apiUrl = "http://" + location.hostname + ":8089/PPSignSDK/";
+  apiUrl = "http://" + window.location.hostname + ":8089/PPSignSDK/";
 }
 // initialize device web api
 var initUrl = apiUrl + "InitialDevice?id=7&width=740&height=480";
@@ -256,7 +256,9 @@ function getStatus() {
               clearInk();
             }
           })
-          .fail(function () {})
+          .fail(function () {
+            console.log("Fail to get confirmed status!");
+          })
           .always(function () {
             if (isPolling) {
               poll();

@@ -37,7 +37,7 @@ function sendPreZoneSize() {
   sendWsMessage(jsonObj);
 }
 //打开设备
-function openDev(camDevInd = 0) {
+function openDev(camDevInd) {
   if (m_closed) {
     StartWebSocket();
   }

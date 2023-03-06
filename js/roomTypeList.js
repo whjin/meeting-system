@@ -4,9 +4,6 @@ function getRoomByType() {
   $.ajax({
     type: "get",
     url: socketUrl + ":8100/sysmgr/sysOrganize/findByType?type=2",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     async: true,
     success: function (res) {
       if (res.data && res.data.length) {

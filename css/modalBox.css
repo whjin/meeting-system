@@ -1,8 +1,7 @@
-.statementModal,
-.appointmentModal,
-.hignMeterModal,
-.selectDateModal,
-.queryModal {
+.appointmentModel,
+.hignMeterModel,
+.selectDateModel,
+.queryModel {
   display: none;
   position: fixed;
   background: rgba(0, 0, 0, 0.5);
@@ -15,14 +14,12 @@
   font-size: 20px;
 }
 
-.selectDateModal {
+.selectDateModel{
   background: transparent;
 }
 
-.statementModal .msgout,
-.appointmentModal .msgout,
-.selectDateModal .msgout,
-.queryModal .msgout {
+.appointmentModel .msgout, .selectDateModel .msgout,
+.queryModel .msgout {
   background: url("../assets/background2.png") no-repeat;
   background-size: 100% 100%;
   position: absolute;
@@ -37,8 +34,7 @@
   height: 310px;
 }
 
-.appointmentModal .msgout,
-.selectDateModal .msgout {
+.appointmentModel .msgout , .selectDateModel .msgout {
   width: 1200px;
   height: 800px;
 }
@@ -106,12 +102,7 @@
   cursor: pointer;
 }
 
-.statementModal .msgout {
-  width: 960px;
-  height: 760px;
-}
-
-.queryModal .msgout {
+.queryModel .msgout {
   width: 1398px;
   height: 800px;
 }
@@ -120,21 +111,19 @@
 .appointmentBlock,
 .hignMeterBlock,
 .selectDateBlock,
-.queryModalBlock {
+.queryModelBlock {
   display: block;
 }
-.layui-form-item {
+.layui-form-item{
   margin-bottom: 0 !important;
   display: inline-block;
 }
-.layui-form-select {
+.layui-form-select{
   display: none;
 }
-.appointInput {
+.appointInput{
   display: initial !important;
 }
-
-.statementTitle,
 .appointTitle,
 .highMeterTitle,
 .selectDateTitle {
@@ -145,23 +134,6 @@
   padding-left: 16px;
   border-bottom: 1px solid #007aff;
   font-weight: bold;
-}
-
-.statementTitle {
-  text-align: center;
-}
-
-.statementText {
-  width: 90%;
-  height: 580px;
-  box-sizing: border-box;
-  overflow: auto;
-  margin: 0 auto;
-  margin-top: 20px;
-  color: #fff;
-  font-size: 16px;
-  line-height: 1.5;
-  text-align: justify;
 }
 
 .datePicker {
@@ -343,12 +315,12 @@
   margin-left: 12px;
 }
 
-.hignMeterModal {
+.hignMeterModel {
   background: url("../assets/background2.png") no-repeat;
   background-size: 100% 100%;
 }
 
-.hignMeterModal .hignMeterContent {
+.hignMeterModel .hignMeterContent {
   margin: 0 30px;
 }
 
@@ -368,15 +340,14 @@
   cursor: pointer;
 }
 
-.hignMeterModal .videoBtn,
-.selectDateModal .videoBtn {
+.hignMeterModel .videoBtn,
+.selectDateModel .videoBtn {
   position: absolute;
   bottom: 35px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.statementButton,
 .videoButton {
   width: 104px;
   height: 52px;
@@ -389,7 +360,6 @@
   cursor: pointer;
 }
 
-.statementButton:hover,
 .videoButton:hover {
   background: url(../assets/saveButtonAct.png) no-repeat;
   background-size: 100% 100%;
@@ -430,7 +400,7 @@
 .queryBtn {
   background: url("../assets/login.png") no-repeat;
   background-size: 100% 100%;
-  width: 260px;
+  width: 120px;
   height: 50px;
   border: 0 none;
   color: rgba(255, 255, 255, 1);
@@ -439,7 +409,6 @@
 }
 
 .queryBtn {
-  width: 120px;
   margin-left: 32px;
 }
 

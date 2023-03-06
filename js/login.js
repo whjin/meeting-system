@@ -3,79 +3,57 @@ let base64Img = [];
 // 选择照片的idx
 let highPhotoIdx = -1;
 // 预约申请弹框
-let appointmentModal = document.querySelector(".appointmentModal");
+let appointmentModel = document.getElementsByClassName("appointmentModel")[0];
 // 打开预约申请弹框
 function appointment() {
   $("#keyboard").hide();
-  appointmentModal.className = "appointmentModal appointmentBlock";
+  appointmentModel.className = "appointmentModel appointmentBlock";
   // 获取监所列表
   getRoomByType();
 }
 
 // 高拍仪弹框
-let hignMeterModal = document.querySelector(".hignMeterModal");
+let hignMeterModel = document.querySelector(".hignMeterModel");
 // 打开高拍仪弹框
 function openHighMeterImg(type) {
   hignMeterType = type;
-  openHignMeter(type == "spot" ? 1 : 0);
-  hignMeterModal.className = "hignMeterModal hignMeterBlock";
+  openHignMeter(type === "spot" ? 1 : 0);
+  hignMeterModel.className = "hignMeterModel hignMeterBlock";
   let highMeterTitle = document.querySelector(".highMeterTitle");
   let bjPicture = document.querySelectorAll(".bjPicture span");
-  let meetingType = localStorage.getItem("meetingType");
-  switch (meetingType) {
-    case "0":
-      // 律师会见
-      switch (type) {
-        case "idCard":
-          highMeterTitle.innerHTML = bjPicture[0].innerText;
-          break;
-        case "spot":
-          highMeterTitle.innerHTML = bjPicture[1].innerText;
-          break;
-        case "lawyer":
-          highMeterTitle.innerHTML = bjPicture[2].innerText;
-          break;
-        case "firm":
-          highMeterTitle.innerHTML = bjPicture[3].innerText;
-          break;
-        case "attorney":
-          highMeterTitle.innerHTML = bjPicture[4].innerText;
-          break;
-      }
+  switch (type) {
+    case "idCard":
+      highMeterTitle.innerHTML = bjPicture[0].innerText;
       break;
-    case "1":
-      // 家属会见
-      switch (type) {
-        case "idCard":
-          highMeterTitle.innerHTML = bjPicture[0].innerText;
-          break;
-        case "spot":
-          highMeterTitle.innerHTML = bjPicture[1].innerText;
-          break;
-        case "familyHousehold":
-          highMeterTitle.innerHTML = bjPicture[2].innerText;
-          break;
-        case "familyOther":
-          highMeterTitle.innerHTML = bjPicture[3].innerText;
-          break;
-      }
+    case "spot":
+      highMeterTitle.innerHTML = bjPicture[1].innerText;
+      break;
+    case "lawyer":
+      highMeterTitle.innerHTML = bjPicture[2].innerText;
+      break;
+    case "firm":
+      highMeterTitle.innerHTML = bjPicture[3].innerText;
+      break;
+    case "attorney":
+      highMeterTitle.innerHTML = bjPicture[4].innerText;
       break;
   }
 
   let timer = window.setInterval(function () {
-    if (ws.readyState == 1) {
-      SetRotationStyle(hignMeterType == "spot" ? 0 : 1);
+    if (ws.readyState === 1) {
+      SetRotationStyle(hignMeterType === "spot" ? 0 : 1);
       clearInterval(timer);
     }
   });
 }
 
 function hignMeterPhoto() {
-  hignMeterBase64Ex(hignMeterType == "spot" ? 1 : 0);
+  // SetRotationStyle(hignMeterType === 'spot' ? 0 : 1);
+  hignMeterBase64Ex(hignMeterType === "spot" ? 1 : 0);
 }
 // 关闭高拍仪弹框
-function closeHignMeterModal() {
-  hignMeterModal.className = "hignMeterModal";
+function closeHignMeterModel() {
+  hignMeterModel.className = "hignMeterModel";
   unload();
   $("#img").remove();
   var clearTimer = setTimeout(function () {
@@ -102,151 +80,61 @@ function resetImg(idx = -1) {
     `;
     myCamera.insertAdjacentHTML("beforeend", string);
   }
-  if (idx == -1) {
+  if (idx === -1) {
     /*重新遍历后选择照片为空*/
     highPhotoIdx = -1;
   }
 }
 
-// 获取token
-function getToken() {
-  let accountName = "khd";
-  let password = "gktel12345+";
-  let params = {
-    accountName,
-    password: md5(password),
-  };
+// 系统登录
+function loginSystem() {
+  let login = document.getElementById("login");
   $.ajax({
     type: "post",
-    url: socketUrl + ":8100/sysmgr/login",
+    url: socketUrl + ":8100/sysmgr/meetInformation/login/" + login.value,
     async: true,
-    data: JSON.stringify(params),
-    dataType: "json",
-    contentType: "application/json",
-    success: function (res) {
-      if (res.state.code == 200) {
-        Cookies.set("token", res.data.token);
+    success: function (str) {
+      if (login.value) {
+        if (str.state.code == "200") {
+          let data = str.data;
+          let message = `caseName:+${data}`;
+          let roomId = ``;
+          passMessage(message);
+          passRoom(roomId);
+          window.localStorage.setItem("code", login.value);
+          window.localStorage.setItem("appointmentId", data.id);
+          window.localStorage.setItem("url", str.data.url);
+          window.localStorage.setItem("remoteIp", data.remoteIp);
+          window.localStorage.setItem("lawyerRoom", data.lawyerRoom);
+          window.localStorage.setItem("unitCode", data.unitCode);
+          data.roomName &&
+            window.localStorage.setItem("roomName", data.roomName);
+          data.organizeName &&
+            window.localStorage.setItem("organizeName", data.organizeName);
+          meetVideoMessage(str.data.url, 0, 1, login.value);
+          meetVideoMessage(data.lawyerRoom, 0, 1, login.value);
+          location.href = socketUrl + ":3000/lawyer/" + data.url;
+        } else {
+          notice(str.state.msg, "error");
+        }
+      } else {
+        notice("验证码不能为空", "error");
       }
     },
   });
 }
 
-// 律师|家属系统登录
-function loginSystem() {
-  let roomNo = localStorage.getItem("roomNo");
-  let meetingType = localStorage.getItem("meetingType");
-  let validateList = [];
-  let params = {};
-  if (meetingType == 0) {
-    // 律师会见
-    let lawyerName = document.querySelector(
-      "[data-name=loginLawyerName]"
-    ).value;
-    let lawyerId = document.querySelector(
-      "[data-name=loginLawyerIdCard]"
-    ).value;
-    let detainName = document.querySelector(
-      "[data-name=lawyer_prisonerName]"
-    ).value;
-    validateList = [
-      validateName(lawyerName),
-      validateQueryIdCard(lawyerId),
-      validateName(detainName),
-    ];
-    if (validateList.includes(false)) {
-      return;
-    }
-    localStorage.setItem("detainName", detainName);
-    localStorage.setItem("mainName", lawyerName);
-    localStorage.setItem("idCard", lawyerId);
-    params = {
-      roomNo,
-      lawyerName,
-      lawyerId,
-      detainName,
-    };
+// 回车登录
+$("#login").bind("keyup", function (e) {
+  if (e.keyCode == "13") {
+    loginSystem();
   }
-  if (meetingType == 1) {
-    // 家属会见
-    let familyName = document.querySelector(
-      "[data-name=loginFamilyName]"
-    ).value;
-    let familyId = document.querySelector("[data-name=loginFamilyId]").value;
-    let detainName = document.querySelector(
-      "[data-name=family_prisonerName]"
-    ).value;
-    validateList = [
-      validateName(familyName),
-      validateQueryIdCard(familyId),
-      validateName(detainName),
-    ];
-    if (validateList.includes(false)) {
-      return;
-    }
-    localStorage.setItem("detainName", detainName);
-    localStorage.setItem("mainName", familyName);
-    localStorage.setItem("idCard", familyId);
-    params = {
-      roomNo,
-      familyName,
-      familyId,
-      detainName,
-    };
-  }
-  $.ajax({
-    type: "post",
-    url: socketUrl + ":8100/sysmgr/meetInformation/login/" + roomNo,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Access-Token": Cookies.get("token"),
-    },
-    async: true,
-    data: JSON.stringify(params),
-    success: function (res) {
-      if (res.state.code == 200) {
-        const {
-          id,
-          url,
-          remoteIp,
-          unitCode,
-          roomName,
-          organizeName,
-          videoName,
-          meetStartTime,
-          meetEndTime,
-          nowDate,
-        } = res.data;
-        localStorage.setItem("code", url);
-        localStorage.setItem("appointmentId", id);
-        localStorage.setItem("url", url);
-        localStorage.setItem("remoteIp", remoteIp);
-        localStorage.setItem("unitCode", unitCode);
-        localStorage.setItem("roomName", roomName);
-        localStorage.setItem("organizeName", organizeName);
-        localStorage.setItem("videoName", videoName);
-        localStorage.setItem(
-          "meetTime",
-          JSON.stringify({
-            startTime: meetStartTime,
-            endTime: meetEndTime,
-            nowTime: nowDate,
-          })
-        );
-        meetVideoMessage(url, 0, 1, url);
-        // 结束录屏
-        screen("end");
-        if (meetingType == 0) {
-          location.href = socketUrl + ":3000/lawyer/" + url;
-        }
-        if (meetingType == 1) {
-          location.href = socketUrl + ":3000/family/" + url;
-        }
-      } else {
-        notice(res.state.msg, "error");
-      }
-    },
-  });
-}
+});
+
+// 传递数据到客户端
+function passMessage(data) {}
+// 传递房间号到客户端
+function passRoom(data) {}
 
 // 上传照片
 function handleUploadImg() {
@@ -259,13 +147,10 @@ function handleUploadImg() {
   let file = dataURLtoFile(src);
   let formData = new FormData();
   formData.append("files", file);
-  notice("正在上传中...", "warn");
+  notice("正在上传中...", "warn", 0);
   $.ajax({
     type: "post",
     url: socketUrl + ":8100/sysmgr/meetInformation/upload",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     data: formData,
     dataType: "json",
     contentType: false, // 禁止设置请求类型
@@ -273,74 +158,31 @@ function handleUploadImg() {
     success: function (res) {
       closeNotice();
       if (res.state.code == "200") {
-        let meetingType = localStorage.getItem("meetingType");
-        switch (meetingType) {
-          case "0":
-            // 律师会见
-            switch (hignMeterType) {
-              case "idCard":
-                let idCard = document.querySelector("[data-name='idCardUrl']");
-                idCard.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-              case "spot":
-                let spot = document.querySelector(
-                  "[data-name='headPortraitUrl']"
-                );
-                spot.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-              case "lawyer":
-                let lawyer = document.querySelector("[data-name='lawyerUrl']");
-                lawyer.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-              case "firm":
-                let firm = document.querySelector(
-                  "[data-name='certificationUrl']"
-                );
-                firm.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-              case "attorney":
-                let attorney = document.querySelector(
-                  "[data-name='attorneyUrl']"
-                );
-                attorney.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-            }
+        switch (hignMeterType) {
+          case "idCard":
+            let idCard = document.querySelector("[data-name='idCardUrl']");
+            idCard.src = res.data[0].encUrl;
+            notice("上传成功", "success");
             break;
-          case "1":
-            // 家属会见
-            switch (hignMeterType) {
-              case "idCard":
-                let idCard = document.querySelector("[data-name='idCardUrl']");
-                idCard.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-              case "spot":
-                let spot = document.querySelector(
-                  "[data-name='headPortraitUrl']"
-                );
-                spot.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-              case "familyHousehold":
-                let familyHousehold = document.querySelector(
-                  "[data-name='familyHousehold']"
-                );
-                familyHousehold.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-              case "familyOther":
-                let familyOther = document.querySelector(
-                  "[data-name='familyOther']"
-                );
-                familyOther.src = res.data[0].encUrl;
-                notice("上传成功", "success");
-                break;
-            }
+          case "spot":
+            let spot = document.querySelector("[data-name='headPortraitUrl']");
+            spot.src = res.data[0].encUrl;
+            notice("上传成功", "success");
+            break;
+          case "lawyer":
+            let lawyer = document.querySelector("[data-name='lawyerUrl']");
+            lawyer.src = res.data[0].encUrl;
+            notice("上传成功", "success");
+            break;
+          case "firm":
+            let firm = document.querySelector("[data-name='certificationUrl']");
+            firm.src = res.data[0].encUrl;
+            notice("上传成功", "success");
+            break;
+          case "attorney":
+            let attorney = document.querySelector("[data-name='attorneyUrl']");
+            attorney.src = res.data[0].encUrl;
+            notice("上传成功", "success");
             break;
         }
       }

@@ -77,7 +77,7 @@
                 $("#eduiVideoHeight", me.$widget)[0].value = img.height;
                 var align = domUtils.getComputedStyle(img,"float"),
                     parentAlign = domUtils.getComputedStyle(img.parentNode,"text-align");
-                me.updateAlignButton(parentAlign=="center"?"center":align);
+                me.updateAlignButton(parentAlign==="center"?"center":align);
             }
             me.createPreviewVideo(url);
 

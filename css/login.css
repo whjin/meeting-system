@@ -1,10 +1,12 @@
 .loginBoxNew {
-  width: 628px;
   height: 100%;
+  width: 628px;
   margin: 0 auto;
+  text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .peopleImgBox {
@@ -18,37 +20,31 @@
 }
 
 .loginMessage {
+  width: 100%;
   font: 20px/40px Microsoft YaHei;
-  margin: 0 auto;
 }
 
 .loginMessage p {
   margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.loginMessage p span {
-  display: inline-block;
-  width: 180px;
-  overflow: auto;
-  text-align: right;
 }
 
 .loginMessage p:last-child {
   display: flex;
   justify-content: flex-end;
-  padding-right: 10px;
+  align-items: center;
+}
+
+.loginMessage p:last-child > span {
+  margin-right: 6px;
 }
 
 .messageName {
   color: #fff;
 }
 
-.apply,
-.login,
-.status {
+#apply,
+#login,
+#status {
   width: 250px;
   height: 40px;
   background: transparent;
@@ -61,17 +57,17 @@
   border-radius: 0;
 }
 
-.apply,
-.status {
+#apply,
+#status {
   cursor: pointer;
 }
 
-.apply:hover,
-.status:hover {
+#apply:hover,
+#status:hover {
   background-color: #0c3869;
 }
 
-.login {
+#login {
   display: inline-block;
   margin-right: 16px;
   padding-left: 12px;

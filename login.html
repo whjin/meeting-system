@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>律师会见登录页</title>
-  <link rel="icon" href="assets/icon/favicon.ico">
+  <title>登录页</title>
+  <link rel="icon" href="assets/favicon.ico">
   <link rel="stylesheet" href="/css/reset.css" />
   <link rel="stylesheet" href="/css/index.css" />
   <link rel="stylesheet" href="/css/login.css" />
@@ -12,32 +12,9 @@
   <link rel="stylesheet" href="/js/layui/css/layui.css" media="all" />
   <link rel="stylesheet" href="/css/layui-custom.css" />
   <link rel="stylesheet" href="/css/keyboard.css">
-  <style>
-    .back-btn {
-      position: fixed;
-      top: 150px;
-      right: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 160px;
-      height: 80px;
-      font-size: 26px;
-      color: #fff;
-      background-image: url(./assets/saveButton.png);
-      background-repeat: no-repeat;
-      background-size: 100% 100%;
-      cursor: pointer;
-    }
-
-    .back-btn:hover {
-      background-image: url(./assets/saveButtonAct.png);
-    }
-  </style>
 </head>
 
 <body>
-  <div class="back-btn">返回首页</div>
   <div
     class="body"
     style="width: 100%; overflow: hidden; box-sizing: border-box;">
@@ -49,71 +26,38 @@
       height="100px"></iframe>
     <div class="loginBoxNew">
       <div class="loginMessage">
-        <p class="appointment">
+        <!-- <p>
           <span class="messageTitle">预约申请：</span>
           <input
             id="apply"
-            class="apply"
             type="button"
             value="预约申请"
             onclick="appointment()" />
         </p>
-        <p class="appointmentQuery">
+        <p>
           <span class="messageTitle">预约查询：</span>
           <input
             id="status"
-            class="status"
             type="button"
             value="预约查询"
             onclick="openQuery()" />
-        </p>
+        </p> -->
         <p>
-          <span class="messageTitle">律师姓名：</span>
-          <input
-            class="login"
-            data-name="loginLawyerName"
-            type="text"
-            autocomplete="off"
-            placeholder="请输入律师姓名" />
-        </p>
-        <p>
-          <span class="messageTitle">律师身份证号：</span>
-          <input
-            class="login keyboard"
-            data-name="loginLawyerIdCard"
-            type="text"
-            autocomplete="off"
-            placeholder="请输入律师身份证号" />
-        </p>
-        <p>
-          <span class="messageTitle">在押人员姓名：</span>
-          <input
-            class="login"
-            data-name="lawyer_prisonerName"
-            type="text"
-            autocomplete="off"
-            placeholder="请输入在押人员姓名" />
-        </p>
-        <p>
-          <button
-            id="login"
-            class="loginBtn"
-            type="button"
-            onclick="loginSystem()">
-            会见登录
-          </button>
+          <span class="messageTitle">请输入验证码：</span>
+          <input id="login" type="text" autocomplete="off" />
+          <button class="loginBtn" type="button" onclick="loginSystem()">会见登录</button>
         </p>
       </div>
     </div>
-    <div id="notice" class="notice" style="display: none;">
-      <span id="noticeIcon" class="noticeIcon"></span>
-      <span id="noticeText" class="noticeText"></span>
+    <div id="notice" style="display: none;">
+      <span id="noticeIcon"></span>
+      <span id="noticeText"></span>
     </div>
   </div>
-  <!-- 律师预约申请弹框 -->
-  <div class="appointmentModal">
+  <!-- 预约申请弹框 -->
+  <div class="appointmentModel">
     <div class="msgout">
-      <span class="close" onclick="closeAppointmentModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+      <span class="close" onclick="closeAppointmentModel()"><img src="/assets/alert.png" alt="关闭" /></span>
       <p class="appointTitle">预约申请</p>
       <form class="layui-form" action="">
         <div style="padding-left: 15px;">
@@ -188,7 +132,7 @@
             <div class="layui-form-item">
               <span class="inputTitle">委托人：</span>
               <input
-                lay-verify="title"
+                lay-verify="userName"
                 class="appointInput"
                 type="text"
                 data-name="clientName" />
@@ -252,13 +196,13 @@
               </button>
             </div>
             <!-- 高拍仪弹框 -->
-            <div class="hignMeterModal" style="z-index: 2;">
-              <span class="close" onclick="closeHignMeterModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+            <div class="hignMeterModel" style="z-index: 2;">
+              <span class="close" onclick="closeHignMeterModel()"><img src="/assets/alert.png" alt="关闭" /></span>
               <p class="highMeterTitle"></p>
               <div class="hignMeterContent">
                 <div style="margin-top: 80px;">
                   <div id="highMeterBox">
-                    <img id="myCanvas" class="myCanvas" src="/assets/load1.gif" />
+                    <img id="myCanvas" src="/assets/load1.gif" />
                   </div>
                   <div id="myCamera">
                     <select id="resoultion" style="display: none;">
@@ -288,9 +232,9 @@
     </div>
   </div>
   <!-- 选择会见时间弹框 -->
-  <div class="selectDateModal">
+  <div class="selectDateModel">
     <div class="msgout">
-      <span class="close" onclick="closeSelectDateModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+      <span class="close" onclick="closeSelectDateModel()"><img src="/assets/alert.png" alt="关闭" /></span>
       <p class="selectDateTitle">会见室选择</p>
       <div class="datePicker">
         <span>选择日期：</span>
@@ -339,10 +283,10 @@
       </div>
     </div>
   </div>
-  <!-- 律师预约查询弹框 -->
-  <div class="queryModal">
+  <!-- 预约查询弹框 -->
+  <div class="queryModel">
     <div class="msgout">
-      <span class="close" onclick="closeQueryModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+      <span class="close" onclick="closeQueryModel()"><img src="/assets/alert.png" alt="关闭" /></span>
       <p class="appointTitle">预约查询</p>
       <div class="queryForm" style="margin-left: -30px;">
         <span class="inputTitle">律师姓名：</span><input
@@ -350,6 +294,7 @@
           type="text"
           data-name="queryLawyerName"
           placeholder="请输入律师姓名"
+          onblur="validateLawyerName()"
           style="margin-right: 12px;" />
         <span class="inputTitle">身份证号码：</span><input
           class="queryInput"
@@ -381,69 +326,25 @@
       </div>
     </div>
   </div>
-  <!-- 软键盘 -->
-  <ul id="keyboard">
-    <i class="keyboard-close"></i>
-    <li class="symbol"><span class="off">`</span><span class="on">~</span></li>
-    <li class="symbol"><span class="off">1</span><span class="on">!</span></li>
-    <li class="symbol"><span class="off">2</span><span class="on">@</span></li>
-    <li class="symbol"><span class="off">3</span><span class="on">#</span></li>
-    <li class="symbol"><span class="off">4</span><span class="on">$</span></li>
-    <li class="symbol"><span class="off">5</span><span class="on">%</span></li>
-    <li class="symbol"><span class="off">6</span><span class="on">^</span></li>
-    <li class="symbol"><span class="off">7</span><span class="on">&amp;</span></li>
-    <li class="symbol"><span class="off">8</span><span class="on">*</span></li>
-    <li class="symbol"><span class="off">9</span><span class="on">(</span></li>
-    <li class="symbol"><span class="off">0</span><span class="on">)</span></li>
-    <li class="symbol"><span class="off">-</span><span class="on">_</span></li>
-    <li class="symbol"><span class="off">=</span><span class="on">+</span></li>
-    <li class="delete lastitem">delete</li>
-    <li class="tab">tab</li>
-    <li class="letter">q</li>
-    <li class="letter">w</li>
-    <li class="letter">e</li>
-    <li class="letter">r</li>
-    <li class="letter">t</li>
-    <li class="letter">y</li>
-    <li class="letter">u</li>
-    <li class="letter">i</li>
-    <li class="letter">o</li>
-    <li class="letter">p</li>
-    <li class="symbol"><span class="off">[</span><span class="on">{</span></li>
-    <li class="symbol"><span class="off">]</span><span class="on">}</span></li>
-    <li class="symbol lastitem"><span class="off">\</span><span class="on">|</span></li>
-    <li class="capslock">caps lock</li>
-    <li class="letter">a</li>
-    <li class="letter">s</li>
-    <li class="letter">d</li>
-    <li class="letter">f</li>
-    <li class="letter">g</li>
-    <li class="letter">h</li>
-    <li class="letter">j</li>
-    <li class="letter">k</li>
-    <li class="letter">l</li>
-    <li class="symbol"><span class="off">;</span><span class="on">:</span></li>
-    <li class="symbol"><span class="off">'</span><span class="on">&quot;</span></li>
-    <li class="return lastitem">return</li>
-    <li class="left-shift">shift</li>
-    <li class="letter">z</li>
-    <li class="letter">x</li>
-    <li class="letter">c</li>
-    <li class="letter">v</li>
-    <li class="letter">b</li>
-    <li class="letter">n</li>
-    <li class="letter">m</li>
-    <li class="symbol"><span class="off">,</span><span class="on">&lt;</span></li>
-    <li class="symbol"><span class="off">.</span><span class="on">&gt;</span></li>
-    <li class="symbol"><span class="off">/</span><span class="on">?</span></li>
-    <li class="right-shift lastitem">shift</li>
-    <li class="space lastitem">&nbsp;</li>
-  </ul>
+  <div id="keyboard">
+    <ul class="keyboard-wrapper">
+      <li class="symbol"><span class="off">1</span></li>
+      <li class="symbol"><span class="off">2</span></li>
+      <li class="symbol"><span class="off">3</span></li>
+      <li class="symbol"><span class="off">4</span></li>
+      <li class="symbol"><span class="off">5</span></li>
+      <li class="symbol"><span class="off">6</span></li>
+      <li class="symbol"><span class="off">7</span></li>
+      <li class="symbol"><span class="off">8</span></li>
+      <li class="symbol"><span class="off">9</span></li>
+      <li class="delete lastitem">删除</li>
+      <li class="symbol"><span class="off">0</span></li>
+      <li class="keyboard-close">关闭</li>
+    </ul>
+  </div>
   <script src="/js/jquery-3.4.1.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/layui/layui.js"></script>
-  <script src="/js/lib/md5.js"></script>
-  <script src="/js/lib/cookie.js"></script>
   <!-- 高拍仪 -->
   <script src="/js/globalVar.js"></script>
   <script src="/js/WebSocket.js"></script>
@@ -455,11 +356,6 @@
   <script src="/js/roomTypeList.js"></script>
   <script src="/js/selectDate.js"></script>
   <script src="/js/keyboard.js"></script>
-  <script>
-    $(".back-btn").on("click", () => {
-      location.href = socketUrl + ':3000/index';
-    });
-  </script>
 </body>
 
 </html>

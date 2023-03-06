@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title></title>
-    <link rel="icon" href="../assets/icon/favicon.ico">
+    <title>律师会见系统</title>
+    <link rel="icon" href="../assets/favicon.ico">
     <link href="/css/umeditor.min.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/prisoner.css">
@@ -15,16 +15,17 @@
         <!--要自动播放要静音才行，视频通话可以把点击事件加到人脸识别按钮，再把静音去掉-->
         <video id="remote-video" class="bigVideo" src="" autoplay controlslist="nodownload"></video>
         <div style="width: calc(100% - 70px);height:100%;position:absolute;">
-            <p class="videoTitle prisonerTitle">律师视频</p>
+            <p class="videoTitle">律师视频</p>
             <div class="videoBd">
-                <!-- <div>
+                <div>
                     <img src="/assets/videoVoice.png" class="voice" />
                     <div class="volumeBox">
                         <div class="volumeBar">
                             <div class="volume"><span></span></div>
                         </div>
                     </div>
-                </div> -->
+                    <!--                    <img src="/assets/videoFullScreen.png" class="fullScreen" />-->
+                </div>
             </div>
         </div>
     </div>
@@ -48,7 +49,7 @@
         </div>
     </div>
 </div>
-<div class="body" id="prisonerLogin" style="display: none;">
+<div class="body" id="login" style="display: none;">
     <iframe src="/header" frameborder="0" width="100%" height="100px"></iframe>
     <div class="loginBox">
         <span class="spin"></span>
@@ -67,9 +68,9 @@
     </div>
 </div>
 <!--通知提醒框-->
-<div id="notice" class="notice" style="display: none;">
-    <span id="noticeIcon" class="noticeIcon"></span>
-    <span id="noticeText" class="noticeText"></span>
+<div id="notice" style="display: none;">
+    <span id="noticeIcon"></span>
+    <span id="noticeText"></span>
 </div>
 <script src='/js/adapter.js'></script>
 <script src="/socket.io/socket.io.js"></script>
@@ -87,17 +88,6 @@
 <script src="/js/utils.js"></script>
 <script src="/js/prisoner.js"></script>
 <script>
-    let meetingType = localStorage.getItem("meetingType") || 0;
-    let title = document.querySelector("title");
-    let prisonerTitle = document.querySelector(".prisonerTitle");
-    if (meetingType == 0) {
-        title.innerText = "律师会见系统";
-        prisonerTitle.innerText = "律师视频";
-    }
-    if (meetingType == 1) {
-        title.innerText = "家属会见系统";
-        prisonerTitle.innerText = "家属视频";
-    }
     // 倒计时
     window.onload = function () {
         // 计时器
@@ -114,7 +104,6 @@
             let timer = null;
             window['prisonerTimeing'] = {
                 start: function () {
-                    clearInterval(timer);
                     timer = setInterval(() => {
                         countTime++;
                         if (!timeFlag) {
@@ -124,17 +113,17 @@
                         }
                     }, 1000);
                 },
-                stop: function () {
-                    clearInterval(timer);
-                    countTime = 0;
-                },
                 reset: function () {
                     clearInterval(timer);
-                    countTime = 0;
+                    prisonerCountTime = 0;
                     nowSecond.innerHTML = '00';
                     nowMinute.innerHTML = '00';
                     nowHour.innerHTML = '00';
                 },
+                stop: function () {
+                    clearInterval(timer);
+                    countTime = 0;
+                }
             };
         } else {
             timerDom.style.display = "none";

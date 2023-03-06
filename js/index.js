@@ -5,15 +5,18 @@ let loginVerification = 0;
 let faceAuthUrl = "http://192.168.1.185";
 
 // pro
-let socketUrl = "http://192.168.1.54";
+// let socketUrl = "http://192.168.1.57"; // 本地
 // dev
-// let socketUrl = "http://localhost";
+let socketUrl = "http://localhost"; // 本地
 
 // 打开高拍仪模块标识
 let hignMeterType = "";
 
+// 录频
+let screenCopy = "start";
+
 // 倒计时开关
-let countdownSwitch = false;
+let countdownSwitch = true;
 
 // 挂断开关
 let hangupSwitch = true;
@@ -45,7 +48,7 @@ function clickVoice(ele, eleBtn) {
 function changeVoice(ev, ele, eleBtn, volume, volumeBar) {
   ele.muted = false;
   let percentage;
-  if (ev.target == volumeBar) {
+  if (ev.target === volumeBar) {
     percentage = (volumeBar.offsetHeight - ev.offsetY) / volumeBar.offsetHeight;
   } else {
     percentage = (volume.offsetHeight - ev.offsetY) / volumeBar.offsetHeight;
@@ -60,7 +63,7 @@ function changeVoice(ev, ele, eleBtn, volume, volumeBar) {
     percentage = 1;
   }
   ele.volume = percentage;
-  if (ele.volume == 0) {
+  if (ele.volume === 0) {
     eleBtn.src = "../assets/videoVoiceMuted.png";
   } else {
     eleBtn.src = "../assets/videoVoice.png";
@@ -96,12 +99,13 @@ function startLive() {
       await navigator.mediaDevices.enumerateDevices().then((deviceInfos) => {
         for (let i = 0; i !== deviceInfos.length; ++i) {
           const deviceInfo = deviceInfos[i];
-          if (deviceInfo.kind == "videoinput") {
-            // 外置摄像头为（罗技高清网络摄像机 C930c (046d:0891)）, 一体机摄像头为（PC Camera (058f:3861)）
-            if (deviceInfo.label.includes("C930c")) {
-              videoId = deviceInfo.deviceId;
-              break;
-            } else if (deviceInfo.label.includes("Camera")) {
+          if (deviceInfo.kind === "videoinput") {
+            // 外置摄像头为HD Pro , 一体机摄像头为HP 2.0MP
+            if (
+              deviceInfo.label.indexOf("Document Scanner") === -1 &&
+              deviceInfo.label.indexOf("USB Camera") === -1 &&
+              deviceInfo.label.indexOf("screen-capture-recorder") === -1
+            ) {
               videoId = deviceInfo.deviceId;
             }
           }
@@ -127,7 +131,9 @@ function startLive() {
       stream.getTracks().map((track) => {
         peer.addTrack(track, stream);
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log("addTrack error");
+    }
     resolve(stream);
   });
 }
@@ -168,31 +174,40 @@ function dataURLtoFile(dataurl, filename = "file") {
 // 更改房间的使用状态
 async function meetVideoMessage(room, numClients, action, code) {
   let url = socketUrl + ":8100/sysmgr/meetVideoMessage/saveVideoMessage";
-  let params = {
-    room,
-    numClients,
-    action,
-    code,
-  };
+  let data =
+    '{"room":"' +
+    room +
+    '","numClients":"' +
+    numClients +
+    '","action":"' +
+    action +
+    '","code":"' +
+    code +
+    '"}';
   $.ajax({
     type: "post",
     url: url,
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     dataType: "json",
     contentType: "application/json",
-    data: JSON.stringify(params),
+    data: data,
     async: false,
-    success: function (result) {},
-    error: function (err) {},
+    success: function (result) {
+      if (result.status === "200") {
+        console.log("save video message succeeded");
+      } else {
+        console.log("save video message failed");
+      }
+    },
+    error: function (err) {
+      console.log("save video message failed");
+    },
   });
 }
 
 // 更新房间状态
 async function updateRoomStatus(room) {
   let url = socketUrl + ":8100/sysmgr/meetInformation/updateRoomStatus";
-  let roomSign = localStorage.getItem("appointmentId") || 0;
+  let roomSign = window.localStorage.getItem("appointmentId") || 0;
   let data = JSON.stringify({
     id: roomSign,
     meetRoom: room,
@@ -200,15 +215,20 @@ async function updateRoomStatus(room) {
   $.ajax({
     type: "post",
     url: url,
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     dataType: "json",
     contentType: "application/json",
     data: data,
     async: false,
-    success: function (result) {},
-    error: function (err) {},
+    success: function (result) {
+      if (result.status === "200") {
+        console.log("save video message succeeded");
+      } else {
+        console.log("save video message failed");
+      }
+    },
+    error: function (err) {
+      console.log("save video message failed");
+    },
   });
 }
 
@@ -217,18 +237,18 @@ function notice(text, type, time = 3000) {
   let notice = document.getElementById("notice");
   let noticeIcon = document.getElementById("noticeIcon");
   let noticeText = document.getElementById("noticeText");
-  if (notice.style.display == "none") {
+  if (notice.style.display === "none") {
     notice.style.display = "block";
     notice.style.zIndex = "1024";
     $("#notice").animate({
-      top: "20px",
+      top: "30px",
     });
     noticeText.innerHTML = text;
-    if (type == "success") {
+    if (type === "success") {
       notice.style.border = "1px solid rgba(20,141,249,1)";
       notice.style.boxShadow = "inset 0 0 15px rgba(20,141,249,0.5)";
       noticeIcon.style.background = 'url("../assets/success.png") no-repeat';
-    } else if (type == "error") {
+    } else if (type === "error") {
       notice.style.border = "1px solid rgba(255,0,0,1)";
       notice.style.boxShadow = "inset 0 0 15px rgba(255,0,0,0.5)";
       noticeIcon.style.background = 'url("../assets/error.png") no-repeat';
@@ -237,17 +257,10 @@ function notice(text, type, time = 3000) {
       notice.style.boxShadow = "inset 0 0 15px rgba(234,149,39,0.5)";
       noticeIcon.style.background = 'url("../assets/warn.png") no-repeat';
     }
-    let prompt = document.getElementById("prompt");
-    if (prompt) {
-      prompt.style.display = "none";
-    }
     if (time) {
-      setTimeout(function () {
+      let timer = setTimeout(function () {
         notice.style.display = "none";
         $("#notice").animate({ top: "0" });
-        if (prompt) {
-          prompt.style.display = "block";
-        }
       }, time);
     }
   } else {
@@ -256,26 +269,27 @@ function notice(text, type, time = 3000) {
 }
 
 function closeNotice() {
+  document.getElementById("notice").style.display = "none";
   $("#notice").animate({ top: "0" });
-  let prompt = document.getElementById("prompt");
-  if (prompt) {
-    prompt.style.display = "block";
+}
+
+// 校验姓名（预约申请）
+function validateName() {
+  let validateName = document.querySelector("[data-name='name']").value;
+  if (validateName == "") {
+    notice("姓名不能为空", "error");
+  } else if (validateName.length > 10) {
+    notice("用户名长度应在1~10位之间", "error");
   }
 }
 
-// 校验姓名
-function validateName(value) {
-  if (value == "") {
-    notice("姓名不能为空", "error");
-    return false;
-  } else if (value.length < 2 || value.length > 10) {
-    notice("姓名长度应在2~10位之间", "error");
-    return false;
-  } else if (/^[\u4e00-\u9fa5a-zA-Z·]{2,10}/.test(value)) {
-    return true;
-  } else {
-    notice("姓名为中文或英文", "error");
-    return false;
+// 校验姓名（预约查询）
+function validateLawyerName() {
+  let validateLawyerName = document.querySelector(
+    "[data-name='queryLawyerName']"
+  ).value;
+  if (validateLawyerName.length > 10) {
+    notice("用户名长度应在1~10位之间", "error");
   }
 }
 
@@ -314,6 +328,16 @@ function validateUnit() {
   }
 }
 
+// 校验委托人
+function validateClient() {
+  let validateClient = document.querySelector("[data-name='clientName']").value;
+  if (validateClient == "") {
+    notice("委托人不能为空", "error");
+  } else if (validateClient.length > 10) {
+    notice("委托人长度应在1~10位之间", "error");
+  }
+}
+
 // 校验会见时间段
 function validateTime() {
   let validateEndTime = document.querySelector(
@@ -330,49 +354,50 @@ function validateTime() {
   }
 }
 
-let vcity = {
-  11: "北京",
-  12: "天津",
-  13: "河北",
-  14: "山西",
-  15: "内蒙古",
-  21: "辽宁",
-  22: "吉林",
-  23: "黑龙江",
-  31: "上海",
-  32: "江苏",
-  33: "浙江",
-  34: "安徽",
-  35: "福建",
-  36: "江西",
-  37: "山东",
-  41: "河南",
-  42: "湖北",
-  43: "湖南",
-  44: "广东",
-  45: "广西",
-  46: "海南",
-  50: "重庆",
-  51: "四川",
-  52: "贵州",
-  53: "云南",
-  54: "西藏",
-  61: "陕西",
-  62: "甘肃",
-  63: "青海",
-  64: "宁夏",
-  65: "新疆",
-  71: "台湾",
-  81: "香港",
-  82: "澳门",
-  91: "国外",
-};
-// layui检验身份证号（预约申请）
-function validateIdCard(selector) {
-  let validateIdCard = document.querySelector(selector).value;
+// 检验身份证号（预约申请）
+function validateIdCard(idCard) {
+  let validateIdCard =
+    idCard || document.querySelector("[data-name='prisonerIdCard']").value;
   if (validateIdCard == "") {
     return "身份证号不能为空";
   } else {
+    let vcity = {
+      11: "北京",
+      12: "天津",
+      13: "河北",
+      14: "山西",
+      15: "内蒙古",
+      21: "辽宁",
+      22: "吉林",
+      23: "黑龙江",
+      31: "上海",
+      32: "江苏",
+      33: "浙江",
+      34: "安徽",
+      35: "福建",
+      36: "江西",
+      37: "山东",
+      41: "河南",
+      42: "湖北",
+      43: "湖南",
+      44: "广东",
+      45: "广西",
+      46: "海南",
+      50: "重庆",
+      51: "四川",
+      52: "贵州",
+      53: "云南",
+      54: "西藏",
+      61: "陕西",
+      62: "甘肃",
+      63: "青海",
+      64: "宁夏",
+      65: "新疆",
+      71: "台湾",
+      81: "香港",
+      82: "澳门",
+      91: "国外",
+    };
     // 校验长度，类型
     let reg = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/;
     if (!reg.test(validateIdCard)) {
@@ -395,30 +420,64 @@ function validateIdCard(selector) {
 }
 
 // 检验身份证号（预约查询）
-function validateQueryIdCard(idCard) {
-  if (idCard == "") {
+function validateQueryIdCard() {
+  let validateQueryIdCard = document.querySelector(
+    "[data-name='queryIdCard']"
+  ).value;
+  if (validateQueryIdCard === "") {
     notice("身份证号不能为空", "error");
     return false;
   } else {
-    // 校验长度，类型
-    let reg = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/;
-    if (!reg.test(idCard)) {
-      notice("身份证长度错误", "error");
-      return false;
-    }
+    let vcity = {
+      11: "北京",
+      12: "天津",
+      13: "河北",
+      14: "山西",
+      15: "内蒙古",
+      21: "辽宁",
+      22: "吉林",
+      23: "黑龙江",
+      31: "上海",
+      32: "江苏",
+      33: "浙江",
+      34: "安徽",
+      35: "福建",
+      36: "江西",
+      37: "山东",
+      41: "河南",
+      42: "湖北",
+      43: "湖南",
+      44: "广东",
+      45: "广西",
+      46: "海南",
+      50: "重庆",
+      51: "四川",
+      52: "贵州",
+      53: "云南",
+      54: "西藏",
+      61: "陕西",
+      62: "甘肃",
+      63: "青海",
+      64: "宁夏",
+      65: "新疆",
+      71: "台湾",
+      81: "香港",
+      82: "澳门",
+      91: "国外",
+    };
     // 校验省份
-    let province = idCard.substr(0, 2);
+    let province = validateQueryIdCard.substr(0, 2);
     if (vcity[province] == undefined) {
       notice("身份证省份代码错误", "error");
       return false;
     }
     // 校验生日
-    if (!checkBirthday(idCard)) {
+    if (!checkBirthday(validateQueryIdCard)) {
       notice("身份证生日信息错误", "error");
       return false;
     }
     // 校验格式
-    if (!checkParity(idCard)) {
+    if (!checkParity(validateQueryIdCard)) {
       notice("身份证格式错误", "error");
       return false;
     }
@@ -492,9 +551,9 @@ function verifyBirthday(year, month, day, birthday) {
   let now_year = now.getFullYear();
   // 年月日是否合理
   if (
-    birthday.getFullYear() == year &&
-    birthday.getMonth() + 1 == month &&
-    birthday.getDate() == day
+    birthday.getFullYear() === year &&
+    birthday.getMonth() + 1 === month &&
+    birthday.getDate() === day
   ) {
     // 判断年份的范围（0岁到100岁之间)
     let time = now_year - year;
@@ -505,7 +564,8 @@ function verifyBirthday(year, month, day, birthday) {
 
 // 打开高拍仪
 function openHignMeter(camDevInd) {
-  let room = localStorage.getItem("roomNo");
+  let pathName = window.location.pathname;
+  let room = pathName.split("/")[2];
 
   /*与服务端建立socket连接*/
   let socket = io(socketUrl + ":3000");
@@ -540,94 +600,79 @@ function previewImg(path, takePhoto = true) {
 
 // 删除图片
 function deleteImg(type) {
-  let meetingType = localStorage.getItem("meetingType");
-  switch (meetingType) {
-    case "0":
-      // 律师会见
-      switch (type) {
-        case "idCard":
-          let idCard = document.querySelector("[data-name='idCardUrl']");
-          idCard.src = "../assets/photo.png";
-          break;
-        case "spot":
-          let spot = document.querySelector("[data-name='headPortraitUrl']");
-          spot.src = "../assets/photo.png";
-          break;
-        case "lawyer":
-          let lawyer = document.querySelector("[data-name='lawyerUrl']");
-          lawyer.src = "../assets/photo.png";
-          break;
-        case "firm":
-          let firm = document.querySelector("[data-name='certificationUrl']");
-          firm.src = "../assets/photo.png";
-          break;
-        case "attorney":
-          let attorney = document.querySelector("[data-name='attorneyUrl']");
-          attorney.src = "../assets/photo.png";
-          break;
-      }
+  switch (type) {
+    case "idCard":
+      let idCard = document.querySelector("[data-name='idCardUrl']");
+      idCard.src = "../assets/photo.png";
       break;
-    case "1":
-      // 家属会见
-      switch (type) {
-        case "idCard":
-          let idCard = document.querySelector("[data-name='idCardUrl']");
-          idCard.src = "../assets/photo.png";
-          break;
-        case "spot":
-          let spot = document.querySelector("[data-name='headPortraitUrl']");
-          spot.src = "../assets/photo.png";
-          break;
-        case "familyHousehold":
-          let familyHousehold = document.querySelector(
-            "[data-name='familyHousehold']"
-          );
-          familyHousehold.src = "../assets/photo.png";
-          break;
-        case "familyOther":
-          let familyOther = document.querySelector("[data-name='familyOther']");
-          familyOther.src = "../assets/photo.png";
-          break;
-      }
+    case "spot":
+      let spot = document.querySelector("[data-name='headPortraitUrl']");
+      spot.src = "../assets/photo.png";
+      break;
+    case "lawyer":
+      let lawyer = document.querySelector("[data-name='lawyerUrl']");
+      lawyer.src = "../assets/photo.png";
+      break;
+    case "firm":
+      let firm = document.querySelector("[data-name='certificationUrl']");
+      firm.src = "../assets/photo.png";
+      break;
+    case "attorney":
+      let attorney = document.querySelector("[data-name='attorneyUrl']");
+      attorney.src = "../assets/photo.png";
       break;
   }
 }
 
-function screen(status) {
-  let url = localStorage.getItem("url");
+function screen() {
+  let code = window.localStorage.getItem("code");
+  let sendUrl = window.localStorage.getItem("url");
   let socket = io(socketUrl + ":3000");
-  if (status == "start") {
-    askVideotape("start");
-    socket.emit("sendStartScreen", url);
+  if (screenCopy === "start") {
+    askVideotape(screenCopy, "LawyerMeeting", code);
+    socket.emit("sendStartScreen", sendUrl, code);
+    document.getElementById("screenCopy").innerText = "结束录屏";
+    screenCopy = "end";
   } else {
-    askVideotape("end");
-    socket.emit("sendEndScreen", url);
+    askVideotape("end", "", code);
+    socket.emit("sendEndScreen", sendUrl, code);
+    document.getElementById("screenCopy").innerText = "开始录屏";
+    screenCopy = "start";
   }
 }
 
-function askVideotape(status) {
-  let url = "";
-  let idCard = localStorage.getItem("idCard");
-  let meetingType = localStorage.getItem("meetingType");
-  let lawyerOrHome = meetingType == 0 ? "Lawyer" : "Home";
-  let videoName = localStorage.getItem("videoName");
-  let data = JSON.stringify({ name: idCard, lawyerOrHome, videoName });
-  if (status == "start") {
-    url = "http://127.0.0.1/StartArraignMeetingScreenCopy";
+function askVideotape(start, lawyerOrPrisoner, code) {
+  let data;
+  let url;
+  if (start === "start") {
+    data =
+      '{"appointmentCode":"' +
+      code +
+      '", "lawyerOrPrisoner":"' +
+      lawyerOrPrisoner +
+      '"}';
+    url = "http://127.0.0.1/StartScreenCopy";
   } else {
-    url = "http://127.0.0.1/StopArraignMeetingScreenCopy";
+    data = '{"appointmentCode":"' + code + '"}';
+    url = "http://127.0.0.1/StopScreenCopy";
   }
   $.ajax({
     type: "post",
     url: url,
     data: data,
-    success: function (res) {},
+    success: function (result) {
+      if (result.status === "200") {
+        console.log("success: " + result);
+      } else {
+        console.log("error: " + result);
+      }
+    },
     error: function (err) {},
   });
 }
 
 function downloaderScreenCopyFiles() {
-  let code = localStorage.getItem("url");
+  let code = window.localStorage.getItem("code");
   let data;
   let url;
   data = '{"appointmentCode":"' + code + '"}';
@@ -637,8 +682,10 @@ function downloaderScreenCopyFiles() {
     url: url,
     data: data,
     success: function (result) {
-      if (result.status == "200") {
+      if (result.status === "200") {
+        console.log("success: " + result);
       } else {
+        console.log("error: " + result);
       }
     },
     error: function (err) {},

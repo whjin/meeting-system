@@ -273,7 +273,7 @@
                 }
             } else if (window.localStorage && /Safari/.test(window.navigator.userAgent)) {
                 try {
-                    localStorage.setItem('test', 1);
+                    window.localStorage.setItem('test', 1);
                 } catch (e) {
                     isPrivate = true;
                 }

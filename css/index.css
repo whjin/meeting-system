@@ -52,7 +52,7 @@ body {
   font-size: 20px;
 }
 
-.myCanvas {
+#myCanvas {
   width: 100%;
   height: 100%;
 }
@@ -175,8 +175,7 @@ body {
   margin-left: 10px;
 }
 
-.videoTitle .start-live,
-.videoBox .start-live {
+.videoTitle .start-live, .videoBox .start-live {
   background: #006fe9;
   width: 140px;
   height: 45px;
@@ -764,12 +763,12 @@ body {
 }
 
 /*通知提醒*/
-.notice {
+#notice,
+#noticeModel {
   display: none;
   position: fixed;
   width: fit-content;
   height: 40px;
-  white-space: nowrap;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
@@ -779,8 +778,8 @@ body {
   box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
-.noticeIcon,
-.promptIcon {
+#noticeIcon,
+#noticeIcon2 {
   display: inline-block;
   height: 25px;
   width: 25px;
@@ -791,40 +790,12 @@ body {
   background: url("../assets/error.png") no-repeat;
 }
 
-.noticeText,
-.promptText {
+#noticeText,
+#noticeText2 {
   color: rgba(255, 255, 255, 1);
   font: 20px/34px Microsoft YaHei;
   display: inline-block;
   height: 34px;
-}
-
-.prompt {
-  width: fit-content;
-  height: 40px;
-  box-sizing: border-box;
-  white-space: nowrap;
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0 10px;
-  border-radius: 4px;
-  border: 1px solid rgba(234, 149, 39, 1);
-  box-shadow: inset 0 0 15px rgba(234, 149, 39, 0.5);
-}
-
-.promptIcon {
-  background: url("../assets/warn.png") no-repeat;
-}
-
-.promptText span {
-  font-weight: bold;
-  color: rgba(53, 255, 250, 1);
-}
-
-.promptText span:last-child {
-  color: rgba(250, 16, 38, 1);
 }
 
 /*模板样式*/

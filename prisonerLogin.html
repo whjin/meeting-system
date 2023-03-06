@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <title>prisonerLogin</title>
     <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/index.js"></script>
     <script src="/js/jquery-3.4.1.min.js"></script>
     <script src='/js/adapter.js'></script>
     <script src='/js/ga.js'></script>
-    <script src="/js/lib/cookie.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/index.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
@@ -29,11 +29,6 @@
         </div>
     </div>
     <iframe id="b" style="display: none;" src="/prisoner/2" frameborder="0" width="100%" height="100%"></iframe>
-    <!--通知提醒框-->
-    <div id="notice" class="notice" style="display: none;">
-        <span id="noticeIcon" class="noticeIcon"></span>
-        <span id="noticeText" class="noticeText"></span>
-    </div>
 </body>
 
 </html>
@@ -78,9 +73,6 @@
             $.ajax({
                 type: "post",
                 url: socketUrl + ":8100/sysmgr/meetVideoMessage/prisonerFaceRecognition",
-                headers: {
-                    "X-Access-Token": Cookies.get("token"),
-                },
                 async: true,
                 contentType: false,
                 processData: false,

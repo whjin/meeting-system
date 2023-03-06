@@ -61,11 +61,11 @@ function initScreencast(options) {
         for (let i = 0; i !== deviceInfos.length; ++i) {
           const deviceInfo = deviceInfos[i];
           const label = deviceInfo.label;
-          if (deviceInfo.kind == "videoinput") {
+          if (deviceInfo.kind === "videoinput") {
             // 外置摄像头为HD Pro , 一体机摄像头为HP 2.0MP
             if (
-              label == "screen-capture-recorder" ||
-              label == "罗技高清网络摄像机 C930c (046d:0891)"
+              label === "screen-capture-recorder" ||
+              label === "罗技高清网络摄像机 C930c (046d:0891)"
             ) {
               videoId = deviceInfo.deviceId;
               cb(videoId);

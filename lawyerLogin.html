@@ -11,7 +11,6 @@
     <script src='/js/adapter.js'></script>
     <script src='/js/ga.js'></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/lib/cookie.js"></script>
     <script src="/js/index.js"></script>
 </head>
 
@@ -80,19 +79,15 @@
         let iframe = document.getElementById("iframeTime").contentWindow;
         let titleImg = iframe.document.getElementsByClassName('bigTitle')[0];
         titleImg.children[0].style.opacity = 0;
-        let roomId = localStorage.getItem("roomNo");
         $.ajax({
             type: "post",
             url: socketUrl + ":8100/sysmgr/meetVideoMessage/queryMeetPersonInfo",
-            headers: {
-                "X-Access-Token": Cookies.get("token"),
-            },
             async: true,
             contentType: "application/json",
             dataType: "json",
             data: '{"room":"' + roomId + '"}',
             success: function (str) {
-                if (str.state.code == 200) {
+                if (str.state.code === 200) {
                     let lawyerNameBox = document.getElementById('lawyerName');
                     lawyerNameBox.innerHTML = str.data.lawyerName;
                     let lawyerUnitBox = document.getElementById('lawyerUnit');

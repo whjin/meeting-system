@@ -1,10 +1,10 @@
 // 正在提交预约
 let isAppointing = false;
 // 会见时间段弹框
-let selectDateModal = document.querySelector(".selectDateModal");
+let selectDateModel = document.querySelector(".selectDateModel");
 // 打开会见时间段
 function openSelectDate() {
-  selectDateModal.className = "selectDateModal selectDateBlock";
+  selectDateModel.className = "selectDateModel selectDateBlock";
   // 设置监所会见室名称
   let prisonName = document.getElementById("prisonName");
   let roomTitle = document.getElementById("roomTitle");
@@ -23,9 +23,6 @@ function openSelectDate() {
   $.ajax({
     type: "post",
     url: socketUrl + ":8100/sysmgr/meetRoomInfo/initRoomListByType",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     data: JSON.stringify(lawyerRoomData),
     async: true,
     dataType: "json",
@@ -76,9 +73,6 @@ function openSelectDate() {
   $.ajax({
     type: "post",
     url: socketUrl + ":8100/sysmgr/meetRoomInfo/initRoomListByType",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     data: JSON.stringify(prisonerRoomData),
     async: true,
     dataType: "json",
@@ -128,16 +122,14 @@ function handleSelectRoom() {
         }
       }
       // 获取会见时间段
+      let roomNo = selectRoomList[i].getAttribute("roomno");
       let selectRoomData = {
         queryDate: selectDateValue,
-        roomNo: selectRoomList[i].getAttribute("roomno"),
+        roomNo: roomNo,
       };
       $.ajax({
         type: "post",
         url: socketUrl + ":8100/sysmgr/meetRoomInfo/queryDisableTime",
-        headers: {
-          "X-Access-Token": Cookies.get("token"),
-        },
         data: JSON.stringify(selectRoomData),
         async: true,
         dataType: "json",
@@ -261,9 +253,6 @@ function handleSelectPrison() {
   $.ajax({
     type: "post",
     url: socketUrl + ":8100/sysmgr/meetRoomInfo/queryUsableRemoteRoomList",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     data: JSON.stringify(selectTimeData),
     async: true,
     dataType: "json",
@@ -374,7 +363,7 @@ function handleConfirmSelect() {
   let appointmentTime = document.querySelector("[data-name='appointmentTime']");
   appointmentDate.value = selectDateValue;
   appointmentTime.value = selectedTime;
-  closeSelectDateModal();
+  closeSelectDateModel();
 }
 
 // 提交预约
@@ -442,13 +431,11 @@ function handleSubmit() {
       break;
   }
   appointData.entity = entity;
+
   appointData.indexs = indexs.map(String)[0];
   $.ajax({
     type: "post",
     url: socketUrl + ":8100/sysmgr/meetInformation/register",
-    headers: {
-      "X-Access-Token": Cookies.get("token"),
-    },
     data: JSON.stringify(appointData),
     async: true,
     dataType: "json",
@@ -457,7 +444,7 @@ function handleSubmit() {
       isAppointing = false;
       if (str.state.code == "200") {
         notice("提交成功", "success");
-        closeAppointmentModal();
+        closeAppointmentModel();
       } else {
         notice(str.state.msg, "error");
       }
@@ -468,7 +455,6 @@ function handleSubmit() {
     },
   });
 }
-
 layui.use("form", function () {
   let form = layui.form;
   //自定义验证规则
@@ -476,14 +462,14 @@ layui.use("form", function () {
     title: function (value) {
       if (value == "") {
         return "姓名不能为空";
-      } else if (value.length < 2 || value.length > 10) {
-        return "姓名长度应在2~10位之间";
-      } else if (!/^[\u4e00-\u9fa5a-zA-Z·]{2,10}/.test(value)) {
-        return "姓名为中文或英文";
+      } else if (value.length > 10) {
+        return "用户名长度应在1~10位之间";
+      } else if (value.indexOf(" ") !== -1) {
+        return "输入的姓名不能含有空格";
       }
     },
     idcard: function (value) {
-      return validateIdCard("[data-name='prisonerIdCard']");
+      return validateIdCard && validateIdCard(value);
     },
     prisons: function (value) {
       if (value == "") {
@@ -509,6 +495,13 @@ layui.use("form", function () {
         return "执业机构不能为空";
       }
     },
+    userName: function (value) {
+      if (validateClient == "") {
+        return "委托人不能为空";
+      } else if (validateClient.length > 10) {
+        return "委托人长度应在1~10位之间";
+      }
+    },
   });
   //监听提交
   form.on("submit(formDemo)", function (data) {
@@ -518,8 +511,8 @@ layui.use("form", function () {
 });
 
 // 关闭会见时间段
-function closeSelectDateModal() {
-  selectDateModal.className = "selectDateModal";
+function closeSelectDateModel() {
+  selectDateModel.className = "selectDateModel";
   // 清空已选会见室、时间段
   let selectedLawyerRoom = document.querySelector(".selectedLawyerRoom");
   selectedLawyerRoom.innerHTML = "";
@@ -532,8 +525,8 @@ function closeSelectDateModal() {
 }
 
 // 关闭、取消预约
-function closeAppointmentModal() {
-  appointmentModal.className = "appointmentModal";
+function closeAppointmentModel() {
+  appointmentModel.className = "appointmentModel";
   // 清空已填表单信息
   let appointInput = document.querySelectorAll(".appointInput");
   let appointPhoto = document.querySelectorAll(".appointPhoto");

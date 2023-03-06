@@ -4,6 +4,8 @@
   "description": "online-meeting",
   "dependencies": {
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
     "jquery": "^3.4.1",
     "jsdom": "^16.2.0",
     "socket.io": "^2.3.0"

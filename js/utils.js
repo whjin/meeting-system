@@ -6,7 +6,7 @@ function deepCopy (obj) {
     let result = Array.isArray(obj) ? [] : {};
     for (let i in obj) {
         if (obj.hasOwnProperty(i)) {
-            if (typeof obj[i] == "object" && obj[i] !== null) {
+            if (typeof obj[i] === "object" && obj[i] !== null) {
                 result[i] = deepCopy(obj[i]);
             } else {
                 result[i] = obj[i];
@@ -23,7 +23,7 @@ function unique (arr) {
     }
     let result = [];
     for (let i = 0; i < arr.length; i++) {
-        if (result.indexOf(arr[i]) == -1) {
+        if (result.indexOf(arr[i]) === -1) {
             result.push(arr[i]);
         }
     }
