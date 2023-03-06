@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>家属会见系统</title>
+  <link rel="icon" href="../assets/icon/favicon.ico">
+  <link rel="stylesheet" href="/css/umeditor.min.css" />
+  <link rel="stylesheet" href="/css/cropper.min.css" />
+  <link rel="stylesheet" href="/css/reset.css" />
+  <link rel="stylesheet" href="/css/index.css" />
+  <link rel="stylesheet" href="/css/modalBox.css" />
+  <link rel="stylesheet" href="/css/lawyer.css" />
+</head>
+
+<body>
+  <div class="body" id="view">
+    <iframe
+      id="iframeTime"
+      src="/header"
+      frameborder="0"
+      width="100%"
+      height="100px"></iframe>
+    <div class="videoBox">
+      <!--要自动播放要静音才行，视频通话可以把点击事件加到人脸识别按钮，再把静音去掉-->
+      <video
+        id="remote-video"
+        class="bigVideo"
+        src=""
+        autoplay
+        controlslist="nodownload"></video>
+      <div
+        style="width: calc(100% - 70px); height: 100%; position: absolute;">
+        <p class="videoTitle">
+          在押人员视频
+        </p>
+        <div class="videoBd">
+          <!-- <div>
+            <img src="/assets/videoVoice.png" class="voice" />
+            <div class="volumeBox">
+              <div class="volumeBar">
+                <div class="volume"><span></span></div>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <div class="videoBox">
+      <video
+        id="local-video"
+        class="bigVideo"
+        src=""
+        autoplay
+        controlslist="nodownload"></video>
+      <div class="prisonerVideo layerVideoBox">
+        <span class="videoTitle layerTitle">
+          家属视频
+          <span id="hangUp">挂断</span>
+          <span id="screenCopy" class="start-live" onclick="screen()" style="float: none;display: none;">开始录屏</span>
+          <span class="start-live" onclick="downloaderScreenCopyFiles()" style="float: none;display: none;">开始刻录</span>
+        </span>
+        <!-- <ul class="layerTab">
+          <li data-idx="1" class="layerAct">切回视频<span></span></li>
+          <li data-idx="2">文档传输<span></span></li>
+          <li data-idx="3">笔记录入<span></span></li>
+        </ul> -->
+        <div class="videoBd layerVideo"></div>
+        <div class="highMeter">
+          <div>
+            <span class="scanTitle">扫描文件</span>
+            <div id="highMeterPhoto">
+              <!--分辨率-->
+              <select id="resoultion" style="display: none;">
+                <option value="0">3664*2744</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="writeNoteBox">
+              <div id="highMeterBigPhoto">
+                <div
+                  id="highMeterBox"
+                  region="north"
+                  split="true"
+                  style="overflow: hidden; height: 100%; width: 100%;">
+                  <img
+                    id="myCanvas"
+                    class="myCanvas"
+                    style="width: 100%; height: 100%;"
+                    src="/assets/load1.gif" />
+                </div>
+                <div
+                  id="previewBox"
+                  style="
+                      height: 100%;
+                      width: 100%;
+                      display: none;
+                      position: relative;
+                    ">
+                  <p
+                    style="
+                        position: absolute;
+                        top: 0;
+                        font-size: 16px;
+                        color: rgba(53, 255, 250, 1);
+                      ">
+                    预览
+                  </p>
+                  <img
+                    id="previewImg"
+                    src="/assets/videoClose.png"
+                    alt=""
+                    style="height: 100%; width: 100%;" />
+                </div>
+              </div>
+            </div>
+            <button class="videoButton" onclick="CaptureBase64Ex()">
+              拍照
+            </button>
+            <button class="videoButton" id="sendPhoto">推送</button>
+            <button class="deleteThisPhoto videoButton">删除</button>
+            <button class="editThisPhoto videoButton">编辑</button>
+          </div>
+        </div>
+        <div class="writeNote">
+          <div>
+            <canvas
+              id="ppCanvas"
+              width="111"
+              height="72"
+              style="display: none;"></canvas>
+            <canvas
+              id="ppfpCanvas"
+              width="70"
+              height="140"
+              style="display: none;"></canvas>
+            <div class="writeNoteBox" style="height: calc(100% - 130px);">
+              <script type="text/plain" id="editor"></script>
+              <div class="template">
+                <p class="templateTitle">选择模板</p>
+                <div class="templateBox"></div>
+                <div class="storeBox">
+                  <div class="store">
+                    <div
+                      style="
+                          line-height: 50px;
+                          font-size: 26px;
+                          margin-top: 88px;
+                        ">
+                      是否需要暂存您上次编辑的内容？
+                    </div>
+                    <div class="templateButton">
+                      <button onclick="stageTemplate()">是</button>
+                      <button onclick="discardTemplate()">否</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="signBottomBox">
+              <button class="videoButton" onclick="initDevice()">
+                获取签名
+              </button>
+              <button class="videoButton" id="sendNote">推送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mian_bg">
+      <div class="msgout">
+        <img
+          class="bigImg"
+          src=""
+          alt=""
+          style="height: 520px; width: 780px;" />
+        <div class="msgBox">
+          <button id="bigImgOut" class="videoButton">退出</button>
+          <button class="leftScale videoButton">左旋</button>
+          <button class="rightScale videoButton">右旋</button>
+          <button class="confirm videoButton">保存</button>
+        </div>
+      </div>
+    </div>
+    <div class="mian_bg2">
+      <div class="msgout">
+        <div class="hangUpText">
+          <img src="/assets/alarm.png" alt="" />
+          <p>确定要挂断吗？</p>
+          <p>挂断后将结束本次会见</p>
+        </div>
+        <button class="videoButton" id="cancelHandUp">取消</button>
+        <button class="videoButton" id="confirmHandUp">确定</button>
+      </div>
+    </div>
+    <div class="mian_bg3">
+      <div class="msgout">
+        <div class="hangUpText">
+          <img src="/assets/alarm.png" alt="" />
+          <p>确定要删除吗？</p>
+          <p>删除后将不可恢复</p>
+        </div>
+        <button class="videoButton" id="cancelDelete">取消</button>
+        <button class="videoButton" id="confirmDelete">确定</button>
+      </div>
+    </div>
+  </div>
+  <div class="body" id="familyLogin" style="display: none;">
+    <iframe
+      id="iframeTime"
+      src="/header"
+      frameborder="0"
+      width="100%"
+      height="100px"></iframe>
+    <div class="loginBox">
+      <span class="spin"></span>
+      <div class="message">
+        <span><span class="messageTitle">预约律师：</span><span
+            class="messageName"
+            id="name"
+            style="width: 80px; display: inline-block;"></span></span>
+        <span><span class="messageTitle">房间号：</span><span class="messageName" id="roomId"></span></span><br />
+        <span><span class="messageTitle">律师单位：</span><span class="messageName" id="idCard"></span></span>
+      </div>
+      <div class="peopleImgBox">
+        <video
+          width="280px"
+          height="380px"
+          id="video"
+          preload
+          autoplay
+          loop
+          muted></video>
+        <canvas id="canvas" width="280px" height="380px"></canvas>
+        <canvas
+          id="canvas2"
+          width="280px"
+          height="380px"
+          style="display: none;"></canvas>
+      </div>
+      <span class="spin2">正在扫描中...</span>
+    </div>
+  </div>
+  <!--通知提醒框-->
+  <div id="notice" class="notice" style="display: none;">
+    <span id="noticeIcon" class="noticeIcon"></span>
+    <span id="noticeText" class="noticeText"></span>
+  </div>
+  <!-- 挂断提醒框 -->
+  <div id="prompt" class="prompt">
+    <p class="promptIcon"></p>
+    <p class="promptText">在押人员<span id="detainPrompt"></span>与家属<span
+        id="mainPrompt"></span>正在会见中，请规范会见行为，会见结束时请点击<span>挂断</span></p>
+  </div>
+  <!-- 插话弹框 -->
+  <div id="chat-dialog" style="display: none;">
+    <div class="header">
+      <h4 class="title">民警通话</h4>
+      <i class="close-btn"></i>
+    </div>
+    <ul class="content">
+    </ul>
+    <div class="bottom">
+      <input class="msg-input-box" type="text" placeholder="请输入...">
+      <span class="send-btn">发送</span>
+    </div>
+  </div>
+  <!-- canvas 获取base64 -->
+  <canvas id="#canvas" style="display: none;"></canvas>
+  <div class="error-mask" style="display: none;">
+    <img class="tips-bg" src="../assets/spjb.png" alt="error-background">
+    <img class="tips-bg" src="../assets/alarm.png" alt="error">
+    <span class="tips-text">人脸比对异常，请正视屏幕！</span>
+  </div>
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/globalVar.js"></script>
+  <script src="/js/WebSocket.js"></script>
+  <!--编辑器-->
+  <script src="/js/ueditor/template.min.js"></script>
+  <script src="/js/ueditor/umeditor.config.js"></script>
+  <script src="/js/ueditor/umeditor.min.js"></script>
+  <script src="/js/ueditor/zh-cn.js"></script>
+  <!-- 高拍仪 -->
+  <script src="/js/adapter.js"></script>
+  <script src="/js/highMeter/mainH5.js"></script>
+  <!--照片编辑器-->
+  <script src="/js/cropper.min.js"></script>
+  <!--签名板-->
+  <script src="/js/penSigner/vendor.js"></script>
+  <script src="/js/penSigner/plugins.js"></script>
+  <script src="/js/penSigner/L501f.js"></script>
+  <!--人脸识别-->
+  <script src="/js/face-camera/tracking.js"></script>
+  <script src="/js/face-camera/face-min.js"></script>
+  <script src="/js/face-camera/stats.min.js"></script>
+  <!-- 插话弹窗 -->
+  <script src="/js/chatDialog.js"></script>
+  <script src="/js/index.js"></script>
+  <script src="/js/lib/cookie.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/screencast.js"></script>
+  <script src="/js/lawyer.js"></script>
+  <script>
+    // 倒计时
+    window.onload = function () {
+      setPromptText();
+      let iframe = document.getElementById("iframeTime").contentWindow;
+      let timerDom = iframe.document.querySelector('.header-right .timer');
+      if (countdownSwitch) {
+        timerDom.style.display = "block";
+        timerDom.children[0].innerText = '倒计时:';
+        let nowHour = iframe.document.getElementById("meetingHour");
+        let nowMinute = iframe.document.getElementById("meetingMin");
+        let nowSecond = iframe.document.getElementById("meetingSec");
+        let hasHint = false; // 提示标识，避免多次操作dom
+        let timeCountList = [nowHour, nowMinute, nowSecond];
+        let timeFlag = timeCountList.every((item) => item == null);
+
+        function setHintStyle () {
+          timerDom.style.color = 'red';
+          timerDom.children[0].style.color = 'red';
+          for (let i = 0; i < timerDom.children.length; i++) {
+            if (i !== 0) {
+              timerDom.children[i].className = 'flicker';
+            }
+          }
+        }
+        window['lawyerTimeing'] = {
+          reset: function () {
+            hasHint = false;
+            timerDom.style.color = 'rgba(255, 255, 255, 1)';
+            timerDom.children[0].style.color = '#35FFFA';
+            for (let i = 0; i < timerDom.children.length; i++) {
+              if (i !== 0) {
+                timerDom.children[i].className = '';
+              }
+            }
+          },
+        };
+        //获取当前时间
+        let meetTime = localStorage.getItem('meetTime') ? JSON.parse(localStorage.getItem('meetTime')) : null;
+        let now = meetTime ? meetTime.nowTime : 0;
+        let end = meetTime ? meetTime.endTime : 0;
+
+        //时间差  
+        let leftTime = end - now;
+        setInterval(() => {
+          if (!meetTime) return;
+          leftTime = leftTime - 1000;
+          if (!timeFlag && leftTime > 0) {
+            nowHour.innerHTML = showNum(Math.floor(leftTime / 1000 / 60 / 60 % 24));
+            nowMinute.innerHTML = showNum(Math.floor(leftTime / 1000 / 60 % 60));
+            nowSecond.innerHTML = showNum(Math.floor(leftTime / 1000 % 60));
+          }
+          if (!hasHint && leftTime < 300000) {
+            hasHint = true;
+            notice('提醒：您的会见时间仅剩余不到5分钟，请尽快结束会见，谢谢！', 'warn');
+            setHintStyle();
+          }
+        }, 1000);
+      } else {
+        timerDom.style.display = "none";
+      }
+    };
+
+    function setPromptText () {
+      let detainPrompt = document.getElementById("detainPrompt");
+      let mainPrompt = document.getElementById("mainPrompt");
+      let detainName = localStorage.getItem("detainName");
+      let mainName = localStorage.getItem("mainName");
+      detainPrompt.innerText = detainName;
+      mainPrompt.innerText = mainName;
+    }
+  </script>
+</body>
+
+</html>

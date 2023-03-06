@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>prisonerLogin</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src='/js/adapter.js'></script>
+    <script src='/js/ga.js'></script>
+    <script src="/js/lib/cookie.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/index.js"></script>
+</head>
+
+<body>
+    <div class="body" id="a">
+        <iframe id="iframeTime" src="/header" frameborder="0" width="100%" height="100px"></iframe>
+        <span class="spin"
+            style="position: absolute;left: 50%;top: 409px;transform: translateX(-50%);width: 100px;height: 30px;color: #fff;font-size: 20px;display: none;">识别中...</span>
+        <div class="loginBox">
+            <video class="peopleImgBox" width="250px" height="350px" autoplay id="video"></video>
+            <canvas id="canvas" width="250px" height="350px" style="display: none;"></canvas>
+            <div class="message">
+                <p><span class="messageTitle">预约律师：</span><span class="messageName" id="name"></span></p>
+                <p><span class="messageTitle">番号：</span><span class="messageName" id="idCard"></span></p>
+                <p><span class="messageTitle">房间号：</span><span class="messageName" id="roomId"></span></p>
+            </div>
+        </div>
+    </div>
+    <iframe id="b" style="display: none;" src="/prisoner/2" frameborder="0" width="100%" height="100%"></iframe>
+    <!--通知提醒框-->
+    <div id="notice" class="notice" style="display: none;">
+        <span id="noticeIcon" class="noticeIcon"></span>
+        <span id="noticeText" class="noticeText"></span>
+    </div>
+</body>
+
+</html>
+<script>
+    window.onload = function () {
+        /*调用本地摄像头*/
+        startLive();
+        /*与服务端建立socket连接*/
+        const socket = io('http://192.168.1.56:3000');
+        /*拿到预约信息*/
+        const message = {
+            roomId: 2,
+            name: '袁某某',
+            idCard: '4408xxxxxxxxxxxxxx'
+        };
+        /*创建房间*/
+        socket.emit('create_or_join', { role: "prisoner", room: message.roomId });
+        /*填入信息*/
+        let roomId = document.getElementById('roomId');
+        let name = document.getElementById('name');
+        let idCard = document.getElementById('idCard');
+        roomId.innerHTML = message.roomId;
+        name.innerHTML = message.name;
+        idCard.innerHTML = message.idCard;
+        /*调用摄像头*/
+        let video = document.getElementById("video");
+        videoCamera(video);
+        /*开始识别人脸*/
+        let spin = document.getElementsByClassName('spin')[0];
+        spin.style.display = 'block';
+        setTimeout(function () {
+            let canvas = document.getElementById("canvas");
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, 250, 350);
+            let new_img = document.createElement('img');
+            new_img.setAttribute('crossOrigin', 'anonymous');
+            new_img.src = canvas.toDataURL("image/jpeg");
+            const formData = new FormData();
+            let data = dataURLtoFile(new_img.src);
+            formData.append('file', data);
+            formData.append('room', roomId);
+            $.ajax({
+                type: "post",
+                url: socketUrl + ":8100/sysmgr/meetVideoMessage/prisonerFaceRecognition",
+                headers: {
+                    "X-Access-Token": Cookies.get("token"),
+                },
+                async: true,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (str) {
+                    spin.style.display = 'none';
+                    if (str.data) {
+                        meetVideoMessage(roomId, 1, 1);
+                        location.href = '/prisoner/' + roomId;
+                    } else {
+                        alert("识别失败");
+                    }
+                }
+            });
+            document.getElementById('a').style.display = 'none';
+            document.getElementById('b').style.display = 'block';
+        }, 5000);
+    };
+</script>

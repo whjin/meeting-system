@@ -1,0 +1,175 @@
+#video,
+#canvas {
+  position: absolute;
+  left: 41px;
+  top: 54px;
+}
+
+.chat-police {
+  position: absolute;
+  left: 175px;
+  top: 0px;
+  display: inline-block;
+  width: 120px;
+
+  color: #fff;
+  font: bold 20px/88px Microsoft YaHei;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.chat-police span {
+  display: inline-block;
+  width: 100%;
+  height: 50px;
+  background-image: url("../assets/saveButton.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+
+  line-height: 50px;
+}
+
+/* -------------- 插话弹框样式 -------------- */
+#chat-dialog {
+  z-index: 9999;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+
+  width: 600px;
+  height: 740px;
+  border: 1px solid #03407E;
+
+  font-size: 18px;
+  color: #fff;
+  background-image: url("../assets/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+/* 头部 */
+#chat-dialog .header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 25px 30px;
+  border-bottom: 1px solid #006FE9;
+}
+
+#chat-dialog .header .title {
+  flex: 1;
+  font-size: 30px;
+  font-weight: bold;
+  color: #35FFFA;
+}
+
+#chat-dialog .header .close-btn {
+  display: inline-block;
+  width: 26px;
+  height: 24px;
+
+  background-image: url("../assets/alert.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+/* 内容 */
+#chat-dialog .content {
+  padding: 30px;
+
+  width: 100%;
+  height: 506px;
+
+  overflow-y: auto;
+}
+
+#chat-dialog .content li {
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+#chat-dialog .content .mine {
+  align-items: flex-end;
+}
+
+#chat-dialog .content li span {
+  margin-bottom: 10px;
+}
+
+#chat-dialog .content li p {
+  padding: 15px;
+
+  background: rgba(42, 66, 115, 0);
+  border: 1px solid #46C5E9;
+  border-radius: 0px 8px 8px 8px;
+}
+
+#chat-dialog .content .mine p { 
+  border: 1px solid #1273DA;
+  border-radius: 8px 0px 8px 8px;
+}
+/* 底部 */
+#chat-dialog .bottom {
+  position: relative;
+  padding: 20px;
+  width: 100%;
+  height: 150px;
+  background-image: url("../assets/chooseRoom.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  cursor: text;
+}
+#chat-dialog .bottom input {
+  width: 100%;
+  border: 1px solid transparent;
+  outline: 0;
+  background-color: transparent;
+  color: #fff;
+}
+#chat-dialog .bottom .send-btn {
+  position: absolute;
+  right: 28px;
+  bottom: 15px;
+
+  display: inline-block;
+  width: 120px;
+  height: 50px;
+  background-image: url("../assets/saveButton.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  font-size: 20px;
+  text-align: center;
+  line-height: 50px;
+  cursor: pointer;
+}
+
+/* 异常蒙版 */
+.error-mask {
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+}
+.error-mask .tips-bg,
+.error-mask .tips-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+}
+.error-mask .tips-text {
+  z-index: 99;
+  margin-top: 75px;
+  font-size: 30px;
+  color: #fff;
+  user-select: none;
+}

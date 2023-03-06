@@ -1,0 +1,96 @@
+.loginBoxNew {
+  width: 628px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.peopleImgBox {
+  box-shadow: inset 0 0 20px #5da6de;
+  border: 1px solid #4ea5cc;
+  width: 250px;
+  height: 350px;
+  border-radius: 4px;
+  margin: 0 auto 30px auto;
+  padding: 10px;
+}
+
+.loginMessage {
+  font: 20px/40px Microsoft YaHei;
+  margin: 0 auto;
+}
+
+.loginMessage p {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.loginMessage p span {
+  display: inline-block;
+  width: 180px;
+  overflow: auto;
+  text-align: right;
+}
+
+.loginMessage p:last-child {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10px;
+}
+
+.messageName {
+  color: #fff;
+}
+
+.apply,
+.login,
+.status {
+  width: 250px;
+  height: 40px;
+  background: transparent;
+  -webkit-box-shadow: inset 0 0 8px #316e97;
+  box-shadow: inset 0 0 8px #316e97;
+  border: 1px solid #316e97;
+  margin: 5px 0 5px 0;
+  font-size: 16px;
+  color: #ffffff;
+  border-radius: 0;
+}
+
+.apply,
+.status {
+  cursor: pointer;
+}
+
+.apply:hover,
+.status:hover {
+  background-color: #0c3869;
+}
+
+.login {
+  display: inline-block;
+  margin-right: 16px;
+  padding-left: 12px;
+}
+
+.ask {
+  color: #fff;
+  font-size: 16px;
+  text-decoration: underline;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+input[type="datetime-local"]::-webkit-inner-spin-button,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-clear-button {
+  display: none;
+}
+
+option {
+  background: #0c1a31;
+}

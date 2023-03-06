@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>律师会见登录页</title>
+  <link rel="icon" href="assets/icon/favicon.ico">
+  <link rel="stylesheet" href="/css/reset.css" />
+  <link rel="stylesheet" href="/css/index.css" />
+  <link rel="stylesheet" href="/css/login.css" />
+  <link rel="stylesheet" href="/css/modalBox.css" />
+  <link rel="stylesheet" href="/js/layui/css/layui.css" media="all" />
+  <link rel="stylesheet" href="/css/layui-custom.css" />
+  <link rel="stylesheet" href="/css/keyboard.css">
+  <style>
+    .back-btn {
+      position: fixed;
+      top: 150px;
+      right: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 160px;
+      height: 80px;
+      font-size: 26px;
+      color: #fff;
+      background-image: url(./assets/saveButton.png);
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      background-image: url(./assets/saveButtonAct.png);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="back-btn">返回首页</div>
+  <div
+    class="body"
+    style="width: 100%; overflow: hidden; box-sizing: border-box;">
+    <iframe
+      id="iframeTime"
+      src="/header"
+      frameborder="0"
+      width="100%"
+      height="100px"></iframe>
+    <div class="loginBoxNew">
+      <div class="loginMessage">
+        <p class="appointment">
+          <span class="messageTitle">预约申请：</span>
+          <input
+            id="apply"
+            class="apply"
+            type="button"
+            value="预约申请"
+            onclick="appointment()" />
+        </p>
+        <p class="appointmentQuery">
+          <span class="messageTitle">预约查询：</span>
+          <input
+            id="status"
+            class="status"
+            type="button"
+            value="预约查询"
+            onclick="openQuery()" />
+        </p>
+        <p>
+          <span class="messageTitle">律师姓名：</span>
+          <input
+            class="login"
+            data-name="loginLawyerName"
+            type="text"
+            autocomplete="off"
+            placeholder="请输入律师姓名" />
+        </p>
+        <p>
+          <span class="messageTitle">律师身份证号：</span>
+          <input
+            class="login keyboard"
+            data-name="loginLawyerIdCard"
+            type="text"
+            autocomplete="off"
+            placeholder="请输入律师身份证号" />
+        </p>
+        <p>
+          <span class="messageTitle">在押人员姓名：</span>
+          <input
+            class="login"
+            data-name="lawyer_prisonerName"
+            type="text"
+            autocomplete="off"
+            placeholder="请输入在押人员姓名" />
+        </p>
+        <p>
+          <button
+            id="login"
+            class="loginBtn"
+            type="button"
+            onclick="loginSystem()">
+            会见登录
+          </button>
+        </p>
+      </div>
+    </div>
+    <div id="notice" class="notice" style="display: none;">
+      <span id="noticeIcon" class="noticeIcon"></span>
+      <span id="noticeText" class="noticeText"></span>
+    </div>
+  </div>
+  <!-- 律师预约申请弹框 -->
+  <div class="appointmentModal">
+    <div class="msgout">
+      <span class="close" onclick="closeAppointmentModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+      <p class="appointTitle">预约申请</p>
+      <form class="layui-form" action="">
+        <div style="padding-left: 15px;">
+          <p class="appointSmallTitle">在押人员信息</p>
+          <div class="inputBox">
+            <div class="layui-form-item">
+              <span class="inputTitle">姓名：</span>
+              <input lay-verify="title" class="appointInput" type="text" data-name="name" />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">身份证号码：</span>
+              <input lay-verify="idcard" class="appointInput" type="text" data-name="prisonerIdCard" />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">关押监所名称：</span>
+              <select
+                lay-verify="prisons"
+                class="appointInput"
+                id="prisonName"
+                data-name="unitCode"></select>
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">会见日期：</span>
+              <input
+                class="appointInput"
+                type="text"
+                data-name="appointmentDate"
+                disabled
+                style="cursor: not-allowed;" />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">会见时间段：</span>
+              <input
+                class="appointInput"
+                type="text"
+                data-name="appointmentTime"
+                onfocus="openSelectDate()"
+                placeholder="请选择预约时间段"
+                style="cursor: pointer;" />
+            </div>
+          </div>
+          <p class="appointSmallTitle">律师信息</p>
+          <div class="inputBox">
+            <div class="layui-form-item">
+              <span class="inputTitle">姓名：</span>
+              <input lay-verify="title" class="appointInput" type="text" data-name="lawyerName" />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">身份证号码：</span>
+              <input lay-verify="idcard" class="appointInput" type="text" data-name="idCard" />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">联系电话：</span>
+              <input lay-verify="iphone" class="appointInput" type="text" data-name="iphone" /><br />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">律师证件号码：</span>
+              <input
+                lay-verify="lawyer"
+                class="appointInput"
+                type="text"
+                data-name="lawyerNumber" />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">执业机构：</span>
+              <input
+                lay-verify="unit"
+                class="appointInput"
+                type="text"
+                data-name="lawyerUnit" />
+            </div>
+            <div class="layui-form-item">
+              <span class="inputTitle">委托人：</span>
+              <input
+                lay-verify="title"
+                class="appointInput"
+                type="text"
+                data-name="clientName" />
+            </div>
+          </div>
+          <p class="appointSmallTitle">律师资料采集</p>
+          <div class="inputBox">
+            <div class="bjPicture">
+              <span>身份证件照</span>
+              <img
+                class="appointPhoto"
+                src="/assets/photo.png"
+                data-name="idCardUrl"
+                onclick="openHighMeterImg('idCard')" />
+              <button class="deleteBtn" type="button" onclick="deleteImg('idCard')">
+                删除
+              </button>
+            </div>
+            <div class="bjPicture">
+              <span>现场拍照</span>
+              <img
+                class="appointPhoto"
+                src="/assets/photo.png"
+                data-name="headPortraitUrl"
+                onclick="openHighMeterImg('spot')" />
+              <button class="deleteBtn" type="button" onclick="deleteImg('spot')">
+                删除
+              </button>
+            </div>
+            <div class="bjPicture">
+              <span>律师证件</span>
+              <img
+                class="appointPhoto"
+                src="/assets/photo.png"
+                data-name="lawyerUrl"
+                onclick="openHighMeterImg('lawyer')" />
+              <button class="deleteBtn" type="button" onclick="deleteImg('lawyer')">
+                删除
+              </button>
+            </div>
+            <div class="bjPicture">
+              <span>律师事务所证明</span>
+              <img
+                class="appointPhoto"
+                src="/assets/photo.png"
+                data-name="certificationUrl"
+                onclick="openHighMeterImg('firm')" />
+              <button class="deleteBtn" type="button" onclick="deleteImg('firm')">
+                删除
+              </button>
+            </div>
+            <div class="bjPicture">
+              <span>委托书</span>
+              <img
+                class="appointPhoto"
+                src="/assets/photo.png"
+                data-name="attorneyUrl"
+                onclick="openHighMeterImg('attorney')" />
+              <button class="deleteBtn" type="button" onclick="deleteImg('attorney')">
+                删除
+              </button>
+            </div>
+            <!-- 高拍仪弹框 -->
+            <div class="hignMeterModal" style="z-index: 2;">
+              <span class="close" onclick="closeHignMeterModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+              <p class="highMeterTitle"></p>
+              <div class="hignMeterContent">
+                <div style="margin-top: 80px;">
+                  <div id="highMeterBox">
+                    <img id="myCanvas" class="myCanvas" src="/assets/load1.gif" />
+                  </div>
+                  <div id="myCamera">
+                    <select id="resoultion" style="display: none;">
+                      <option value="0">3664*2744</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="videoBtn">
+                <button class="videoButton" type="button" onclick="hignMeterPhoto()">
+                  拍照
+                </button>
+                <button class="videoButton" type="button" onclick="handleUploadImg()">
+                  上传
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-block">
+            <button class="videoButton" type="button" lay-submit lay-filter="formDemo">提交</button>
+            <button type="reset" class="videoButton">重置</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- 选择会见时间弹框 -->
+  <div class="selectDateModal">
+    <div class="msgout">
+      <span class="close" onclick="closeSelectDateModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+      <p class="selectDateTitle">会见室选择</p>
+      <div class="datePicker">
+        <span>选择日期：</span>
+        <input
+          id="selectDate"
+          class="selectInput"
+          type="text"
+          data-name="selectStartDate"
+          placeholder="请选择预约日期"
+          style="width: 200px;" />
+      </div>
+      <div class="selectRoom">
+        <div class="selectRoomLeft">
+          <p class="meetingRoomTitle">律师会见室选择</p>
+          <div class="selectRoomBox">
+            <div class="selectRoomItem"></div>
+          </div>
+          <div class="selectTimeBox">
+            <p class="selectTimeTitle">会见时间段选择</p>
+            <div class="selectTimeItem"></div>
+          </div>
+          <div class="selected selectedRoom">
+            <p>
+              已选会见室：<span class="selectedLawyerRoom"></span>
+            </p>
+            <p>时间：<span class="selectedTime"></span></p>
+          </div>
+        </div>
+        <div class="selectRoomRight">
+          <p class="meetingRoomTitle">
+            <span id="roomTitle"></span>
+          </p>
+          <div class="meetingRoomBox"></div>
+          <div class="selected selectedPrison">
+            <p>
+              已选会见室：<span class="selectedPrisonRoom"></span>
+            </p>
+            <p>时间：<span class="selectedTime"></span></p>
+          </div>
+        </div>
+      </div>
+      <div class="videoBtn">
+        <button class="videoButton" type="button" onclick="handleConfirmSelect()">
+          确认选择
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- 律师预约查询弹框 -->
+  <div class="queryModal">
+    <div class="msgout">
+      <span class="close" onclick="closeQueryModal()"><img src="/assets/alert.png" alt="关闭" /></span>
+      <p class="appointTitle">预约查询</p>
+      <div class="queryForm" style="margin-left: -30px;">
+        <span class="inputTitle">律师姓名：</span><input
+          class="queryInput"
+          type="text"
+          data-name="queryLawyerName"
+          placeholder="请输入律师姓名"
+          style="margin-right: 12px;" />
+        <span class="inputTitle">身份证号码：</span><input
+          class="queryInput"
+          type="text"
+          data-name="queryIdCard"
+          placeholder="请输入律师身份证号码" />
+        <span class="inputTitle">预约日期：</span>
+        <input
+          id="appointStartDate"
+          class="queryInput"
+          type="text"
+          data-name="queryStartDate"
+          autocomplete="off"
+          placeholder="请选择开始日期"
+          style="width: 150px;" />
+        <span class="inputTitle" style="width: 12px; margin: 0 6px 0 0;">-</span>
+        <input
+          id="appointEndDate"
+          class="queryInput"
+          type="text"
+          data-name="queryEndDate"
+          autocomplete="off"
+          placeholder="请选择结束日期"
+          style="width: 150px;" />
+        <button class="queryBtn" type="button" onclick="queryConfirm()">查询</button>
+      </div>
+      <div class="queryBox">
+        <table id="queryTable"></table>
+      </div>
+    </div>
+  </div>
+  <!-- 软键盘 -->
+  <ul id="keyboard">
+    <i class="keyboard-close"></i>
+    <li class="symbol"><span class="off">`</span><span class="on">~</span></li>
+    <li class="symbol"><span class="off">1</span><span class="on">!</span></li>
+    <li class="symbol"><span class="off">2</span><span class="on">@</span></li>
+    <li class="symbol"><span class="off">3</span><span class="on">#</span></li>
+    <li class="symbol"><span class="off">4</span><span class="on">$</span></li>
+    <li class="symbol"><span class="off">5</span><span class="on">%</span></li>
+    <li class="symbol"><span class="off">6</span><span class="on">^</span></li>
+    <li class="symbol"><span class="off">7</span><span class="on">&amp;</span></li>
+    <li class="symbol"><span class="off">8</span><span class="on">*</span></li>
+    <li class="symbol"><span class="off">9</span><span class="on">(</span></li>
+    <li class="symbol"><span class="off">0</span><span class="on">)</span></li>
+    <li class="symbol"><span class="off">-</span><span class="on">_</span></li>
+    <li class="symbol"><span class="off">=</span><span class="on">+</span></li>
+    <li class="delete lastitem">delete</li>
+    <li class="tab">tab</li>
+    <li class="letter">q</li>
+    <li class="letter">w</li>
+    <li class="letter">e</li>
+    <li class="letter">r</li>
+    <li class="letter">t</li>
+    <li class="letter">y</li>
+    <li class="letter">u</li>
+    <li class="letter">i</li>
+    <li class="letter">o</li>
+    <li class="letter">p</li>
+    <li class="symbol"><span class="off">[</span><span class="on">{</span></li>
+    <li class="symbol"><span class="off">]</span><span class="on">}</span></li>
+    <li class="symbol lastitem"><span class="off">\</span><span class="on">|</span></li>
+    <li class="capslock">caps lock</li>
+    <li class="letter">a</li>
+    <li class="letter">s</li>
+    <li class="letter">d</li>
+    <li class="letter">f</li>
+    <li class="letter">g</li>
+    <li class="letter">h</li>
+    <li class="letter">j</li>
+    <li class="letter">k</li>
+    <li class="letter">l</li>
+    <li class="symbol"><span class="off">;</span><span class="on">:</span></li>
+    <li class="symbol"><span class="off">'</span><span class="on">&quot;</span></li>
+    <li class="return lastitem">return</li>
+    <li class="left-shift">shift</li>
+    <li class="letter">z</li>
+    <li class="letter">x</li>
+    <li class="letter">c</li>
+    <li class="letter">v</li>
+    <li class="letter">b</li>
+    <li class="letter">n</li>
+    <li class="letter">m</li>
+    <li class="symbol"><span class="off">,</span><span class="on">&lt;</span></li>
+    <li class="symbol"><span class="off">.</span><span class="on">&gt;</span></li>
+    <li class="symbol"><span class="off">/</span><span class="on">?</span></li>
+    <li class="right-shift lastitem">shift</li>
+    <li class="space lastitem">&nbsp;</li>
+  </ul>
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/layui/layui.js"></script>
+  <script src="/js/lib/md5.js"></script>
+  <script src="/js/lib/cookie.js"></script>
+  <!-- 高拍仪 -->
+  <script src="/js/globalVar.js"></script>
+  <script src="/js/WebSocket.js"></script>
+  <script src="/js/highMeter/mainH5.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/index.js"></script>
+  <script src="/js/login.js"></script>
+  <script src="/js/queryInfo.js"></script>
+  <script src="/js/roomTypeList.js"></script>
+  <script src="/js/selectDate.js"></script>
+  <script src="/js/keyboard.js"></script>
+  <script>
+    $(".back-btn").on("click", () => {
+      location.href = socketUrl + ':3000/index';
+    });
+  </script>
+</body>
+
+</html>

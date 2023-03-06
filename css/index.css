@@ -1,0 +1,952 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 0;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  background: url("../assets/background.png") no-repeat;
+  background-size: 100% 100%;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+}
+
+.body {
+  height: calc(100% - 100px);
+  margin-top: -2px;
+}
+
+/*滚动条*/
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/*弹窗*/
+.mian_bg,
+.mian_bg2,
+.mian_bg3 {
+  display: none;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1002;
+  transition: opacity 0.3s;
+  overflow: hidden;
+  font-size: 20px;
+}
+
+.myCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+.mian_bg2 .msgout,
+.mian_bg3 .msgout {
+  background: url("../assets/background2.png") no-repeat;
+  background-size: 100% 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  box-shadow: 1px 1px 50px rgba(0, 0, 0, 0.3);
+  cursor: auto;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 530px;
+  height: 310px;
+}
+
+.mian_bg2 button,
+.mian_bg3 button {
+  position: absolute;
+  bottom: 36px;
+}
+
+.mian_bg2 button:nth-child(3),
+.mian_bg3 button:nth-child(3) {
+  right: 36px;
+}
+
+.mian_bg2 button:nth-child(2),
+.mian_bg3 button:nth-child(2) {
+  right: 142px;
+}
+
+.hangUpText p:nth-child(2) {
+  color: rgba(255, 255, 255, 1);
+  font-size: 30px;
+  position: absolute;
+  left: 120px;
+  top: 66px;
+}
+
+.hangUpText p:nth-child(3) {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  position: absolute;
+  left: 120px;
+  top: 111px;
+}
+
+.hangUpText img {
+  position: absolute;
+  left: 36px;
+  top: 65px;
+}
+
+.mian_bg .msgout {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  box-shadow: 1px 1px 50px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  border-radius: 8px;
+  cursor: auto;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  height: 800px;
+  width: 1200px;
+  text-align: center;
+}
+
+.bigImg {
+  width: 100%;
+  height: 90%;
+}
+
+.msgBox {
+  width: 100%;
+  height: 74px;
+  background: #091b2b;
+  box-shadow: inset 0 0 20px #5da6de;
+  border: 1px solid #4ea5cc;
+  position: absolute;
+  bottom: -74px;
+}
+
+.msgBox button {
+  margin-top: 10px;
+}
+
+.videoBox {
+  height: 100%;
+  display: inline-block;
+  padding: 0 35px;
+  vertical-align: middle;
+  border-left: 2px solid rgba(0, 111, 233, 0.48);
+  width: calc(50% - 2px);
+  position: relative;
+}
+
+.videoBox:nth-child(2) {
+  border-left: 0 none;
+  width: 50%;
+}
+
+.videoTitle {
+  color: rgba(53, 255, 250, 1);
+  font: bold 30px/88px Microsoft YaHei;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.videoTitle > span {
+  color: rgba(255, 255, 255, 1);
+  font: 20px/88px Microsoft YaHei;
+  float: right;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.videoTitle .start-live,
+.videoBox .start-live {
+  background: #006fe9;
+  width: 140px;
+  height: 45px;
+  display: inline-block;
+  font: 20px/45px Microsoft YaHei;
+  text-align: center;
+  border-radius: 5px;
+  margin-top: 25px;
+  margin-left: 10px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.videoBd {
+  width: 100%;
+  height: calc(100% - 165px);
+  background: url("../assets/videoBd.png") no-repeat;
+  background-size: 100% 100%;
+  padding: 29px 17px;
+  position: relative;
+}
+
+.videoBd > div:nth-child(1) {
+  width: 100%;
+  height: 60px;
+  position: absolute;
+  bottom: 32px;
+  right: 10px;
+}
+
+.videoBd img {
+  position: absolute;
+  z-index: 1;
+  cursor: pointer;
+}
+
+/*音量*/
+.videoBd .voice {
+  width: 33px;
+  height: 60px;
+  right: 28px;
+  bottom: 0;
+  padding-top: 30px;
+}
+
+.videoBd .volumeBox {
+  width: 30px;
+  height: 130px;
+  border: 1px solid #00c6ff;
+  z-index: 2;
+  position: absolute;
+  right: 30px;
+  bottom: 40px;
+  background: #135386;
+  border-radius: 3px;
+  display: none;
+}
+
+.videoBd .volumeBar {
+  width: 8px;
+  height: 100px;
+  background: rgba(93, 166, 222, 0.5);
+  border: 1px solid #52abd2;
+  border-radius: 3px;
+  position: relative;
+  margin: 0 auto;
+  top: 14px;
+}
+
+.videoBd .volumeBar > .volume {
+  width: 6px;
+  height: 10px;
+  background: #00c6ff;
+  border-radius: 3px;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+}
+
+.videoBd .volumeBar > .volume > span {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 1);
+  background: #00c6ff;
+  position: relative;
+  left: -2px;
+}
+
+/*全屏*/
+.videoBd .fullScreen {
+  width: 29px;
+  height: 29px;
+  right: 28px;
+  bottom: 0;
+}
+
+.bigVideo {
+  width: calc(100% - 104px);
+  height: calc(100% - 276px);
+  background: rgba(0, 0, 0, 1);
+  border-radius: 4px;
+  position: absolute;
+  left: 52px;
+  top: 115px;
+}
+
+.bigVideo::-webkit-media-controls {
+  display: none !important;
+}
+
+/*在押人员*/
+.prisonerVideo {
+  width: 100%;
+  height: 100%;
+}
+
+.prisonVideo {
+  width: 210px;
+  height: 165px;
+  box-shadow: inset 0 0 16px #5da6de;
+  left: -265px;
+  padding: 10px;
+  border: 1px solid #4ea5cc;
+}
+
+.scanTitle {
+  color: rgba(255, 255, 255, 1);
+  font: 20px/20px Microsoft YaHei;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.scanSmall {
+  width: 186px;
+  height: 134px;
+  background: url("../assets/scan.png") no-repeat;
+  background-size: 100% 100%;
+  padding: 14px 26px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0);
+}
+
+.scanSmall > div {
+  width: 100%;
+  height: calc(100% - 24px);
+  background: rgba(255, 255, 255, 1);
+  margin-bottom: 6px;
+}
+
+.scanSmall > p {
+  text-align: center;
+  color: rgba(255, 255, 255, 1);
+}
+
+.scanSmall > p span {
+  font: 18px/18px Microsoft YaHei;
+}
+
+.scanSmall > p span:nth-child(2) {
+  border-bottom: 2px solid #35fffa;
+  color: #35fffa;
+}
+
+.number {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  box-shadow: inset 0 0 8px #5da6de;
+  border: 1px solid #4ea5cc;
+  border-radius: 50%;
+  text-align: center;
+}
+
+/*扫描文件预览*/
+.scanBox {
+  display: none;
+  width: 100%;
+  height: calc(100% - 58px);
+}
+
+.signBox {
+  display: none;
+  width: 100%;
+  height: calc(100% - 58px);
+  text-align: center;
+}
+
+.sign,
+.translateFileBox {
+  width: calc(100% - 246px);
+  height: calc(100% - 110px);
+  box-shadow: inset 0 0 29px #5da6de;
+  border: 1px solid #4ea5cc;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.sign > div,
+.translateFileBox > div {
+  width: 100%;
+  height: 100%;
+  background: white;
+}
+
+.sign > div {
+  height: calc(100% - 30px);
+}
+
+/*预览文档签字*/
+.sign {
+  padding: 18px 70px;
+}
+
+.sign > p {
+  font-size: 20px;
+  float: right;
+  color: #fff;
+  line-height: 40px;
+}
+
+/*律师tab页面*/
+.highMeter,
+.writeNote,
+.translateFile {
+  display: none;
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+}
+
+.layerTab {
+  float: right;
+  max-width: calc(100% - 190px);
+  overflow: auto;
+  height: 88px;
+  white-space: nowrap;
+}
+
+.layerTab > li {
+  display: inline-block;
+  color: rgba(255, 255, 255, 1);
+  font: 20px/88px Microsoft YaHei;
+  cursor: pointer;
+  margin: 0 10px;
+  position: relative;
+}
+
+.layerTab > li > span {
+  position: absolute;
+  width: 40px;
+  height: 4px;
+  display: inline-block;
+  background: #35fffa;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+.layerTab > .layerAct {
+  color: #35fffa;
+  font-weight: bold;
+}
+
+.layerTab > .layerAct > span {
+  opacity: 1;
+}
+
+/*笔记录入/高拍仪/回传文件*/
+.writeNote,
+.highMeter,
+.translateFile {
+  width: 100%;
+  height: calc(100% - 110px);
+}
+
+/*笔记录入/高拍仪/回传文件*/
+.writeNote {
+  height: calc(100% - 165px);
+}
+
+.writeNote > div,
+.highMeter > div,
+.translateFile > div {
+  display: inline-block;
+}
+
+.writeNote > div {
+  width: 100%;
+  height: 100%;
+}
+
+.highMeter > div:nth-child(1),
+.translateFile > div:nth-child(1) {
+  width: 208px;
+  height: 100%;
+  text-align: left;
+}
+
+.highMeter > div:nth-child(2),
+.translateFile > div:nth-child(2) {
+  float: right;
+  width: calc(100% - 208px);
+  height: 100%;
+  text-align: center;
+}
+
+.writeNoteBox {
+  width: 100%;
+  height: calc(100% - 80px);
+  box-shadow: inset 0 0 29px #5da6de;
+  border: 1px solid #4ea5cc;
+  padding: 24px;
+  color: rgba(0, 0, 0, 1);
+  text-align: left;
+  position: relative;
+}
+
+.readSignBox {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.writeNoteBox > div {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 1);
+}
+
+.writeNote button,
+.highMeter button {
+  position: relative;
+  left: 0;
+  transform: translate(0);
+}
+
+.writeNoteBox > span {
+  color: rgba(255, 255, 255, 1);
+  float: right;
+  position: relative;
+  right: 100px;
+  font: 20px/30px Microsoft YaHei;
+  margin-top: 10px;
+}
+
+.signBottomBox {
+  height: 120px;
+  border: 1px solid #4ea5cc;
+  box-shadow: inset 0 0 16px #5da6de;
+}
+
+.signAndBox {
+  position: relative;
+  border: 2px solid #4ea5cc;
+  width: 270px;
+  height: 100px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 50px;
+  padding: 1px;
+  top: 4px;
+}
+
+.signAndBox > div:nth-child(1) {
+  width: calc(100% - 50px);
+  height: 100%;
+  background: #fff;
+}
+
+.signAndBox > div:nth-child(2) {
+  width: 50px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.fuzhiAndShanchu {
+  display: inline-block;
+  color: red;
+  font-size: 30px;
+  cursor: pointer;
+  border: 1px solid red;
+  box-shadow: inset 0 0 5px red;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  line-height: 20px;
+  position: absolute;
+  right: 10px;
+  text-align: center;
+}
+
+#highMeterPhoto {
+  width: calc(100% - 10px);
+  height: calc(100% - 66px);
+  overflow: auto;
+  position: relative;
+}
+
+/*文本编辑器*/
+#editor > .w-e-toolbar {
+  width: 100%;
+  text-align: left;
+  display: inline-block;
+}
+
+#editor .w-e-toolbar .w-e-menu {
+  display: inline-block;
+}
+
+.w-e-menu:hover {
+  z-index: 10002 !important;
+}
+
+#editor .w-e-text-container {
+  background: rgba(255, 255, 255, 1);
+  height: calc(100% - 64px) !important;
+  color: rgba(0, 0, 0, 1);
+  text-align: left;
+  font-size: 16px;
+  border: 0 none !important;
+}
+
+#editor .w-e-text-container .w-e-text {
+  overflow: auto;
+}
+
+.signBox #editor .w-e-text-container {
+  height: 100% !important;
+}
+
+/*编辑图片*/
+.cropper-bg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#editor .w-e-text-container .w-e-text img {
+  width: 50px;
+  height: 20px;
+}
+
+/*编辑器*/
+.edui-container {
+  width: 100% !important;
+  box-shadow: unset;
+  z-index: unset !important;
+}
+
+.edui-container .edui-toolbar {
+  box-shadow: unset;
+  z-index: unset !important;
+}
+
+.edui-container .edui-editor-body {
+  height: calc(100% - 34px);
+  overflow: auto;
+}
+
+.layerVideoBox #editor,
+.writeNoteBox #editor {
+  width: 702px !important;
+  min-height: 100% !important;
+  position: relative;
+  z-index: unset !important;
+  background: #fff;
+  margin: 0 auto;
+  padding: 0 !important;
+}
+
+.edui-splitbutton .edui-caret,
+.edui-combobox .edui-caret {
+  width: 0;
+  height: 0;
+  border-width: 4px;
+  border-style: solid;
+  border-color: #000 transparent transparent transparent;
+  vertical-align: middle;
+  position: relative;
+  right: 3px;
+}
+
+.edui-combobox .edui-button-label {
+  line-height: 16px;
+}
+
+.edui-combobox-menu {
+  box-shadow: unset;
+}
+
+.edui-scale {
+  display: none !important;
+}
+
+.edui-editor-body .edui-body-container p {
+  z-index: 2;
+  position: relative;
+}
+
+.edui-btn-name-fontfamily .edui-button-label {
+  width: 108px;
+}
+
+/*登录*/
+.loginBox {
+  height: 600px;
+  width: 350px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.peopleImgBox {
+  background: url("../assets/loginBox.png") no-repeat;
+  background-size: 100% 100%;
+  width: 362px;
+  height: 487px;
+  border-radius: 4px;
+  margin: 0 auto 30px auto;
+  padding: 10px;
+  position: relative;
+}
+
+.message {
+  font: 18px/30px Microsoft YaHei;
+  padding: 0 38px;
+}
+
+.messageTitle {
+  color: rgba(53, 255, 250, 1);
+}
+
+.messageName {
+  color: #fff;
+}
+
+.submitBtn {
+  background: url("../assets/login.png") no-repeat;
+  background-size: 100% 100%;
+  width: 250px;
+  height: 80px;
+  border: 0 none;
+  color: rgba(255, 255, 255, 1);
+  font: 26px/80px Microsoft YaHei;
+  cursor: pointer;
+  margin-top: 40px;
+}
+
+.spin {
+  position: absolute;
+  left: 51px;
+  top: 409px;
+  width: 257px;
+  height: 6px;
+  background: rgba(114, 249, 253, 1);
+  border-radius: 3px;
+  z-index: 1;
+  animation: mymove 5s infinite;
+  display: none;
+}
+
+@keyframes mymove {
+  0% {
+    top: 130px;
+  }
+
+  50% {
+    top: 470px;
+  }
+
+  100% {
+    top: 130px;
+  }
+}
+
+.spin2 {
+  font-size: 32px;
+  color: #fff;
+  text-align: center;
+  display: none;
+}
+
+/*通知提醒*/
+.notice {
+  display: none;
+  position: fixed;
+  width: fit-content;
+  height: 40px;
+  white-space: nowrap;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 10px;
+  border-radius: 3px;
+  border: 1px solid red;
+  box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+.noticeIcon,
+.promptIcon {
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+  background-size: 100% 100%;
+  margin-right: 8px;
+  position: relative;
+  top: 6px;
+  background: url("../assets/error.png") no-repeat;
+}
+
+.noticeText,
+.promptText {
+  color: rgba(255, 255, 255, 1);
+  font: 20px/34px Microsoft YaHei;
+  display: inline-block;
+  height: 34px;
+}
+
+.prompt {
+  width: fit-content;
+  height: 40px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(234, 149, 39, 1);
+  box-shadow: inset 0 0 15px rgba(234, 149, 39, 0.5);
+}
+
+.promptIcon {
+  background: url("../assets/warn.png") no-repeat;
+}
+
+.promptText span {
+  font-weight: bold;
+  color: rgba(53, 255, 250, 1);
+}
+
+.promptText span:last-child {
+  color: rgba(250, 16, 38, 1);
+}
+
+/*模板样式*/
+.template {
+  display: block;
+  width: calc(100% - 48px) !important;
+  height: calc(100% - 85px) !important;
+  position: absolute;
+  top: 60px;
+  z-index: 1001;
+  overflow: auto;
+  text-align: center;
+  background-color: rgb(247, 247, 247) !important;
+}
+
+.template .templateTitle {
+  color: rgba(27, 27, 27, 1);
+  font: 20px/50px Microsoft YaHei;
+  text-align: left;
+  border-bottom: 1px solid rgba(221, 221, 221, 1);
+  padding-left: 20px;
+}
+
+.templateBox {
+  height: 320px;
+}
+
+.template .templateBox > div {
+  position: relative;
+  width: 180px;
+  height: 280px;
+  display: inline-block;
+  cursor: pointer;
+  margin: 10px;
+  border: 2px solid transparent;
+}
+
+.template .templateBox > div:hover {
+  border: 2px solid rgb(101, 178, 233);
+}
+
+.template > div .active {
+  border: 2px solid rgb(101, 178, 233);
+}
+
+.template .templateBox img {
+  width: 100%;
+  height: 100%;
+}
+
+.template .templateBox span {
+  position: absolute;
+  bottom: 12px;
+  left: 10px;
+}
+
+.template .templateBox p {
+  width: 120px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-all;
+  position: absolute;
+  bottom: 12px;
+  left: 10px;
+}
+
+.template .templateBox p > span {
+  position: relative;
+  bottom: auto;
+  left: auto;
+}
+
+.template .templateBox > div span:nth-child(3) {
+  left: unset;
+  right: 10px;
+}
+
+/*是否暂存框*/
+.storeBox {
+  width: calc(50% - 126px);
+  height: calc(100% - 424px);
+  position: fixed;
+  top: 245px;
+  cursor: not-allowed;
+  background: rgba(204, 204, 204, 0.5);
+  display: none;
+}
+
+.store {
+  width: 450px;
+  height: 300px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 116px;
+  background: #fff;
+  border: 2px solid #aaa;
+  border-radius: 5px;
+  cursor: default;
+}
+
+.template .templateButton {
+  margin-top: 20px;
+}
+
+.template .templateButton button {
+  width: 90px;
+  height: 42px;
+  border-radius: 4px;
+  border: 0;
+  font: 17px/42px Microsoft YaHei;
+  cursor: pointer;
+}
+
+.template .templateButton button:nth-child(1) {
+  background: #006fe9;
+  margin-left: 10px;
+  color: rgba(255, 255, 255, 1);
+}
+
+.template .templateButton button:nth-child(2) {
+  background: #e8eaed;
+  color: #323232;
+}

@@ -1,0 +1,25 @@
+.loginBox {
+    height: 100%;
+    width: 320px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 130px;
+}
+
+.peopleImgBox {
+    box-shadow: inset 0 0 20px #5DA6DE;
+    border: 1px solid #4EA5CC;
+    width: 250px;
+    height: 350px;
+    border-radius: 4px;
+    margin: 0 auto 30px auto;
+    padding: 10px;
+}
+
+.message {
+    font: 20px/40px Microsoft YaHei;
+}
+
+.messageName {
+    color: #fff;
+}

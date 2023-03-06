@@ -1,0 +1,467 @@
+.statementModal,
+.appointmentModal,
+.hignMeterModal,
+.selectDateModal,
+.queryModal {
+  display: none;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transition: opacity 0.3s;
+  overflow: hidden;
+  font-size: 20px;
+}
+
+.selectDateModal {
+  background: transparent;
+}
+
+.statementModal .msgout,
+.appointmentModal .msgout,
+.selectDateModal .msgout,
+.queryModal .msgout {
+  background: url("../assets/background2.png") no-repeat;
+  background-size: 100% 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  box-shadow: 1px 1px 50px rgba(0, 0, 0, 0.3);
+  cursor: auto;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 530px;
+  height: 310px;
+}
+
+.appointmentModal .msgout,
+.selectDateModal .msgout {
+  width: 1200px;
+  height: 800px;
+}
+
+.appointSmallTitle {
+  font-size: 20px;
+  color: rgb(53, 255, 250);
+  line-height: 60px;
+  text-align: left;
+  padding-left: 16px;
+}
+
+.inputBox {
+  text-align: left;
+}
+
+.deleteBtn {
+  width: 100px;
+  height: 50px;
+  background: url(../assets/saveButton.png) no-repeat;
+  background-size: 100% 100%;
+  border: none;
+  border-radius: 0;
+  color: rgba(255, 255, 255, 1);
+  font: 18px/52px Microsoft YaHei;
+  cursor: pointer;
+  position: absolute;
+  margin: auto;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+}
+
+.deleteBtn:hover {
+  background: url(../assets/saveButtonAct.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.bjPicture {
+  position: relative;
+  background: url("../assets/bjPicture.png") no-repeat;
+  background-size: 100% 100%;
+  width: 205px;
+  height: 205px;
+  text-align: center;
+  margin: 0 12px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.bjPicture > span {
+  color: #fff;
+  font-size: 16px;
+  line-height: 35px;
+}
+
+.bjPicture > img {
+  width: 100px;
+  height: 100px;
+  border: 1px dashed #fff;
+  margin: 8px 38px;
+  color: #fff;
+  font-size: 36px;
+  line-height: 116px;
+  cursor: pointer;
+}
+
+.statementModal .msgout {
+  width: 960px;
+  height: 760px;
+}
+
+.queryModal .msgout {
+  width: 1398px;
+  height: 800px;
+}
+
+/* 预约申请界面，高拍仪界面，会见时间界面 */
+.appointmentBlock,
+.hignMeterBlock,
+.selectDateBlock,
+.queryModalBlock {
+  display: block;
+}
+.layui-form-item {
+  margin-bottom: 0 !important;
+  display: inline-block;
+}
+.layui-form-select {
+  display: none;
+}
+.appointInput {
+  display: initial !important;
+}
+
+.statementTitle,
+.appointTitle,
+.highMeterTitle,
+.selectDateTitle {
+  font-size: 20px;
+  color: rgb(53, 255, 250);
+  line-height: 60px;
+  text-align: left;
+  padding-left: 16px;
+  border-bottom: 1px solid #007aff;
+  font-weight: bold;
+}
+
+.statementTitle {
+  text-align: center;
+}
+
+.statementText {
+  width: 90%;
+  height: 580px;
+  box-sizing: border-box;
+  overflow: auto;
+  margin: 0 auto;
+  margin-top: 20px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+.datePicker {
+  text-align: left;
+  margin-top: 16px;
+}
+
+.datePicker span {
+  font-size: 18px;
+  color: rgb(53, 255, 250);
+  padding-left: 24px;
+}
+
+.selectRoom {
+  display: flex;
+}
+
+.selectRoomLeft {
+  width: 55%;
+  border-right: 2px solid #00c6ff;
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.selectRoomRight {
+  flex: 1;
+  padding-left: 16px;
+  position: relative;
+}
+
+.selectRoomItem {
+  text-align: left;
+  padding-left: 21px;
+  height: 185px;
+  position: absolute;
+  top: 18px;
+  overflow: auto;
+}
+
+.meetingRoomBox {
+  text-align: left;
+}
+
+.selectRoomItem span,
+.meetingRoomBox span {
+  display: inline-block;
+  width: 165px;
+  height: 56px;
+  line-height: 56px;
+  background: url("../assets/selectBox.png") no-repeat;
+  background-size: 100% 100%;
+  color: rgba(255, 255, 255, 1);
+  font: 21px/56px Microsoft YaHei;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 12px;
+}
+
+.selectRoomItem span {
+  width: 195px;
+}
+
+.meetingRoomBox span {
+  width: 170px;
+  text-align: center;
+}
+
+.meetingRoomBox span:hover,
+.selectRoomItem span:hover {
+  font-weight: bold;
+  color: rgba(53, 255, 250, 1);
+}
+
+.selectLawyerRoom,
+.selectPrisonerRoom {
+  font-weight: bold !important;
+  color: rgba(53, 255, 250, 1) !important;
+}
+
+.meetingRoomTitle,
+.selected {
+  font-size: 20px;
+  color: rgb(53, 255, 250);
+  line-height: 60px;
+  text-align: left;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.selectRoomBox,
+.selectTimeBox {
+  width: 100%;
+  box-sizing: border-box;
+  height: 214px;
+  background: url("../assets/chooseRoom.png") no-repeat;
+  background-size: 100% 100%;
+  color: #fff;
+  position: relative;
+}
+
+.selectTimeTitle {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: left;
+  padding: 25px 0 20px 30px;
+  color: rgba(53, 255, 250, 1);
+  font: 22px/22px Microsoft YaHei;
+}
+
+.selectTimeItem {
+  font-size: 0;
+}
+
+.selectTimeItem span {
+  display: inline-block;
+  width: 95px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 15px;
+  border: 1px solid #00c6ff;
+  box-shadow: 0 0 8px 0 rgb(0, 122, 255) inset;
+  vertical-align: top;
+  text-align: center;
+  cursor: pointer;
+}
+
+.selectTimeItem span:hover {
+  background: #35fffa;
+  color: rgba(5, 29, 53, 1);
+}
+
+.selectTime {
+  background: #35fffa;
+  color: rgba(5, 29, 53, 1);
+}
+
+.disabled {
+  background: #48688c;
+}
+
+.selectTimeItem span.disabled:hover {
+  background: #48688c;
+  cursor: not-allowed;
+  color: #fff;
+}
+
+.selected {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.selectedPrison {
+  position: absolute;
+  bottom: 0;
+}
+.selected p,
+.selected p span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selected p:first-child {
+  display: flex;
+  flex: 1;
+}
+
+.selected p:last-child {
+  display: flex;
+  width: 220px;
+  margin-left: 12px;
+}
+
+.hignMeterModal {
+  background: url("../assets/background2.png") no-repeat;
+  background-size: 100% 100%;
+}
+
+.hignMeterModal .hignMeterContent {
+  margin: 0 30px;
+}
+
+#highMeterBox,
+#myCamera {
+  overflow: hidden;
+  height: 500px;
+  width: 50%;
+  float: left;
+  border: 1px solid #027cff;
+}
+
+#myCamera {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.hignMeterModal .videoBtn,
+.selectDateModal .videoBtn {
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.statementButton,
+.videoButton {
+  width: 104px;
+  height: 52px;
+  background: url(../assets/saveButton.png) no-repeat;
+  background-size: 100% 100%;
+  border: 0 none;
+  color: rgba(255, 255, 255, 1);
+  font: 18px/52px Microsoft YaHei;
+  margin-top: 25px;
+  cursor: pointer;
+}
+
+.statementButton:hover,
+.videoButton:hover {
+  background: url(../assets/saveButtonAct.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.queryForm {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.inputTitle {
+  display: inline-block;
+  width: 150px;
+  text-align: right;
+  color: #fff;
+  font: 16px/16px Microsoft YaHei;
+}
+
+.appointInput,
+.selectInput,
+.queryInput {
+  height: 40px;
+  width: 200px;
+  background: transparent !important;
+  -webkit-box-shadow: inset 0 0 8px #316e97;
+  box-shadow: inset 0 0 8px #316e97;
+  border: 1px solid #316e97;
+  border-radius: 0;
+  color: #fff;
+  font-size: 14px;
+  padding-left: 12px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.loginBtn,
+.queryBtn {
+  background: url("../assets/login.png") no-repeat;
+  background-size: 100% 100%;
+  width: 260px;
+  height: 50px;
+  border: 0 none;
+  color: rgba(255, 255, 255, 1);
+  font: 18px/50px Microsoft YaHei;
+  cursor: pointer;
+}
+
+.queryBtn {
+  width: 120px;
+  margin-left: 32px;
+}
+
+.loginBtn:hover,
+.queryBtn:hover {
+  background: url(../assets/saveButtonAct.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.queryBox {
+  box-sizing: border-box;
+  padding: 0 15px;
+}
+
+.close {
+  position: absolute;
+  right: 25px;
+  top: 20px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.close img {
+  width: 18px;
+}

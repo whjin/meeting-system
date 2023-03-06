@@ -1,0 +1,97 @@
+.layui-table {
+  background: none !important;
+  color: #fff !important;
+}
+
+.layui-table-body {
+  margin-right: -5px !important;
+}
+
+.layui-table-view,
+.layui-table-header,
+.layui-table-header th,
+.layui-table td {
+  border-color: #006490 !important;
+}
+
+.layui-table-header th {
+  background: #00193a !important;
+  color: #fff;
+  font-size: 16px !important;
+}
+
+.layui-table td {
+  font-size: 16px !important;
+}
+
+.layui-table tr:hover {
+  background: none !important;
+  color: #0070ec !important;
+}
+
+.layui-table-tips-main,
+.layui-table-tips-c,
+.layui-table-grid-down {
+  display: none !important;
+}
+
+.layui-table-page {
+  border: none !important;
+}
+
+.layui-laypage-skip,
+.layui-laypage-count {
+  color: #fff !important;
+}
+
+.layui-laypage-limits option {
+  background: #fff !important;
+}
+
+.layui-laypage a {
+  color: #fff !important;
+}
+
+.layui-laydate {
+  background-color: #001a3d !important;
+  border: 1px solid #316e97 !important;
+}
+
+.layui-laydate-content th {
+  color: #c5c8ce !important;
+}
+
+.layui-laydate-content .laydate-day-prev,
+.layui-laydate-content .laydate-day-next {
+  color: #8c8989 !important;
+}
+
+.layui-laydate-content td {
+  color: #fff !important;
+}
+
+.layui-laydate .layui-this,
+.layui-laydate-content td:hover {
+  background-color: #2d8cf0 !important;
+  border-radius: 3px;
+}
+
+.layui-laydate-header i {
+  color: #c5c8ce !important;
+}
+
+.laydate-set-ym span {
+  color: #fff !important;
+  font-size: larger !important;
+}
+
+.laydate-footer-btns span:hover {
+  background-color: #2d8cf0 !important;
+  color: #fff !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.layui-laypage-em {
+  background-color: #2d8cf0 !important;
+}
